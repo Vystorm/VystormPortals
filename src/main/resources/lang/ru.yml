@@ -1,0 +1,470 @@
+errors:
+  unknown-portal: "Неизвестный портал: {0} <gray>См. /vportal list."
+  not-owner: "Этот портал вам не принадлежит."
+  name-exists: "Это имя уже занято."
+  dimensions: "Ширина и высота должны быть от 2 до 8."
+  aperture: "Проём портала должен быть свободен и загружен."
+  not-linked: "Портал {0} не связан с другим порталом."
+  self-link: "Портал нельзя связать с самим собой."
+  invalid-name: "Имя портала должно содержать от 1 до 40 строчных латинских букв, цифр, подчёркиваний или дефисов."
+  same-name: "Портал {0} уже имеет это имя."
+  owner-access: "Владелец всегда может использовать {0}."
+  already-trusted: "Этот игрок уже имеет доверенный доступ к {0}."
+  trust-limit: "Для одного портала допускается не более {0} доверенных игроков."
+  not-trusted: "У этого игрока нет доверенного доступа к {0}."
+  unknown-player: "Неизвестный игрок: {0} <gray>Проверьте написание – игрок должен хотя бы раз заходить на сервер."
+  whole-number: "Введите целое число вместо {0}."
+  warmup: "Время ожидания должно быть от 0 до 200 тиков."
+  portal-limit: "Допускается не более 256 порталов."
+trip-list: "<yellow>Ваши маршруты: {0}"
+trip-saved: "<yellow>Маршрут {0} сохранён."
+trip-deleted: "<yellow>Маршрут {0} удалён."
+trip-missing: "<yellow>Личного маршрута с таким именем нет."
+trip-unavailable: "<yellow>Портал изменён, приостановлен или недоступен. Путешествие остановлено."
+trip-preview: "<yellow>Полный маршрут {0}: остановок {1}"
+trip-stop: "<yellow>{0}. {1} — {2} ({3}, {4}, {5}); ожидание {6}с"
+trip-confirm: "<yellow>Рядом с первым порталом введите /vportal trip confirm в течение 30с. Отойдите или введите /vportal trip cancel для отмены."
+trip-expired: "<yellow>Предпросмотр устарел. Повторите /vportal trip start ИМЯ."
+trip-busy: "<yellow>Путешествие уже идёт либо достигнут лимит сервера."
+trip-origin: "<yellow>Встаньте не дальше четырёх блоков от {0}, без транспорта и пассажиров."
+trip-started: "<yellow>Путешествие {0} началось. Не двигайтесь между остановками."
+trip-cancelled: "<yellow>Путешествие отменено. Вы остаётесь на текущем месте."
+trip-timeout: "<yellow>Время истекло; дальнейших попыток телепортации не будет."
+trip-unsafe: "<yellow>Следующий выход опасен. Путешествие остановлено на текущем месте."
+trip-arrived: "<yellow>Прибытие в {0} ({1}/{2})."
+trip-complete: "<yellow>Путешествие {0} завершено."
+trip-usage: "<yellow>/vportal trip save ИМЯ A B [C...] | list | show ИМЯ | start ИМЯ | confirm | cancel | delete ИМЯ"
+# Русский — UTF-8. Keep keys, placeholders and formatting tokens unchanged.
+nearby-title: '<gold>Доступные порталы в пределах 256 блоков (около 10):'
+nearby-empty: <gray>Доступных порталов в пределах 256 блоков нет.
+nearby-entry: '<gray>{0}: {1} блок → {2}'
+route-paused: <gold>Этот маршрут приостановлен на техническое обслуживание.
+status-paused: <gold>Портал {0} приостановлен.
+status-open: <green>Портал {0} является открытым (другой конец также должен быть открытым).
+denied: <red>У вас нет на это разрешения.
+player-only: <red>Запустите эту команду в игре.
+list: '<gray>Порталы: <white>{0}'
+created: <green>Портал {0} созданный. Соедините его с /vportal link NAME TARGET.
+linked: <green>{0} и {1} связаны между собой.
+deleted: <green>Портал {0} удален.
+updated: <green>Обновлен портал {0}.
+invalid: '<red>Недействительный вход: {0} <gray>Нажмите Tab, чтобы увидеть допустимые значения.'
+failed: <red>Спасение провалилось. Предыдущее состояние сохраняется; см. журнал сервера.
+warming: <gold>Портал открывается за {0} секунд. Уходите отменить.
+unavailable: <red>Целевой мир не загружен.
+unsafe: <red>Выход не загружен или не безопасен для стояния.
+cancelled: <red>Другой плагин отменил телепорт.
+usage: <gray>/vportal menu | create NAME [WIDTH HEIGHT] | link NAME TARGET | unlink NAME | delete NAME | access NAME public/private
+  | warmup NAME TICKS | trust NAME [PLAYER] | untrust NAME PLAYER | rename NAME NEW_NAME | info NAME | list | pause PORTAL
+  | resume PORTAL
+unlinked: <green>Портал {0} больше не связан.
+renamed: <green>Портал {0} теперь называется {1}.
+info: <gray>Портал <white>{0}</white> в {1} на {2}, размер {3}, доступ {4}, разминка {5} клещей, связанных с <white>{6}</white>Владелец
+  {7}
+menu-disabled: <red>Меню портала выключено на этом сервере.
+trust-disabled: <red>На этом сервере отключаются доверенные игроки.
+trusted: <green>{1} теперь может использовать портал {0}, даже если он является частным.
+untrusted: <green>{1} больше не может использовать портал {0}.
+trusted-list: '<gray>Доверено {0}: <white>{1}'
+trusted-notify: <aqua>{0} дал вам доступ к порталу {1}.
+untrusted-notify: <gray>{0} вернул вам доступ к порталу {1}.
+menu:
+  style: "✦ Стиль"
+  style-lore: "Частицы рамки, звук и эффект прибытия этого портала"
+  paused: приостановлено
+  open: открытый
+  pause: <gold>Портал паузы
+  resume: <green>Портал резюме
+  pause-lore:
+  - <gray>Остановите путешествие и просмотр в обоих направлениях.
+  - <gray>Ссылки и списки доступа остаются. Нажмите, чтобы переключиться.
+  entry: порталы
+  entry-desc: Ваши порталы и каждый портал, который вы можете использовать
+  title: Порталы ({page}/{pages})
+  detail-title: Портал {name}
+  link-title: Связь с... ({page}/{pages})
+  portal: <aqua>{name}
+  portal-lore:
+  - '<gray>Статус: <white>{status}'
+  - '<gray>Мир: <white>{world}</white> в <white>{position}'
+  - <gray>Размер {size}, {access}, разминка {warmup} клещей
+  - '<gray>Связано с: <white>{target}'
+  - '<gray>Владелец: <white>{owner}'
+  - <yellow>Нажмите для деталей
+  detail-lore:
+  - '<gray>Статус: <white>{status}'
+  - '<gray>Мир: <white>{world}</white> в <white>{position}'
+  - <gray>Размер {size}, {access}, разминка {warmup} клещей
+  - '<gray>Связано с: <white>{target}'
+  - '<gray>Владелец: <white>{owner}'
+  link-target-lore:
+  - '<gray>Статус: <white>{status}'
+  - '<gray>Мир: <white>{world}</white> в <white>{position}'
+  - '<gray>В настоящее время связаны с: <white>{target}'
+  - <yellow>Нажмите, чтобы связать оба способа
+  public: общий
+  private: личный
+  previous: <yellow>Предыдущая страница
+  next: <yellow>Следующая страница
+  close: <red>Закрыть
+  back: <yellow>Назад
+  empty: <gray>Пока нет порталов
+  empty-lore:
+  - <gray>Нет портала, который вы можете использовать.
+  create: <green>Создайте портал здесь
+  create-lore:
+  - <gray>Портал 3x3, где вы стоите, обращенный к вашему виду.
+  - <yellow>Нажмите и введите имя
+  create-title: Новый портал
+  create-question: 'Название нового портала (буквы, цифры, - и _):'
+  create-fallback: <gray>Создать портал с /vportal create NAME [WIDTH HEIGHT].
+  access-public: '<green>Доступ: публичный'
+  access-private: '<gray>Доступ: частный'
+  access-lore:
+  - <gray>Публичные порталы могут использовать все
+  - <gray>С разрешения; предметы и существа тоже путешествуют.
+  - <yellow>Нажмите, чтобы переключиться
+  link: <aqua>Ссылка
+  link-lore:
+  - '<gray>Теперь связан с: <white>{target}'
+  - <yellow>Нажмите, чтобы выбрать другой портал
+  unlink: <gold>Ссылка
+  unlink-lore:
+  - <gray>Отключение от <white>{target}</white>.
+  - <gray>Оба портала остаются.
+  warmup: '<yellow>Разминка: {ticks} клещей ({seconds} с)'
+  warmup-lore:
+  - <gray>Левый клик +10, правый клик -10
+  - '<gray>Сдвиг: +50 / -50 (0 до 200 клещей)'
+  delete: <red>Удалить портал
+  delete-lore:
+  - <gray>Удалить портал и его ссылки.
+  - <red>Shift-click скачать
+  delete-hint: <red>Нажмите кнопку удаления, чтобы действительно удалить {name}.
+  locate: <aqua>Покажи мне, где
+  locate-lore:
+  - <gray>Откройте портал и сообщите
+  - <gray>Как далеко это находится.
+  locate-near: <aqua>{name}</aqua> <gray>находится <white>{position}</white>{distance} кварталов отсюда. Ищите контур.
+  locate-far: <aqua>{name}</aqua> <gray>В мире есть <white>{world}</white> в <white>{position}</white>.
+trust-menu:
+  entry: <aqua>Портал доступа для {player}
+  entry-lore:
+  - <gray>{player} может использовать {count} из ваших порталов {total}.
+  - <yellow>Нажмите, чтобы выбрать
+  title: 'Портал доступа: {player}'
+  trusted: <green>{name}
+  trusted-lore:
+  - <gray>{player} может использовать этот портал ({access}).
+  - <yellow>Нажмите, чтобы получить доступ обратно
+  not-trusted: <gray>{name}
+  not-trusted-lore:
+  - <gray>{player} не может использовать его, пока он является частным ({access}).
+  - <yellow>Нажмите, чтобы дать доступ
+commands:
+  vportal:
+    description: 'Связанные порталы: список, меню, создание, ссылка, доступ, разминка и доверенные игроки'
+    aliases: []
+    values:
+      public: общий
+      private: личный
+    sub:
+      list:
+        name: list
+        aliases: []
+        description: Порталы, которые вы можете использовать, и их цели
+      trip:
+        name: trip
+        aliases: []
+        description: "Сохранить, просмотреть и пройти маршрут через несколько порталов"
+        args:
+          action: "ACTION"
+      nearby:
+        name: nearby
+        aliases: []
+        description: Найдите ближайшие доступные порталы в вашем мире
+      menu:
+        name: menu
+        aliases: []
+        description: Откройте меню портала
+      info:
+        name: info
+        aliases: []
+        description: Положение, размер, доступ, разминка, цель и владелец портала
+        args:
+          name: PORTAL
+      create:
+        name: create
+        aliases: []
+        description: Создайте портал, где вы стоите, лицом к вам (2-8 блоков, по умолчанию 3x3)
+        args:
+          name: NAME
+          width: WIDTH
+          height: HEIGHT
+      link:
+        name: link
+        aliases: []
+        description: Свяжите два своих портала в обе стороны
+        args:
+          name: PORTAL
+          target: TARGET
+      unlink:
+        name: unlink
+        aliases: []
+        description: Удалить ссылку на портал
+        args:
+          name: PORTAL
+      delete:
+        name: delete
+        aliases: []
+        description: Удалить портал
+        args:
+          name: PORTAL
+      access:
+        name: access
+        aliases: []
+        description: Откройте портал для всех или только для вас и доверенных игроков
+        args:
+          name: PORTAL
+      warmup:
+        name: warmup
+        aliases: []
+        description: Игрок ждет на портале перед поездкой
+        args:
+          name: PORTAL
+          ticks: TICKS
+      trust:
+        name: trust
+        aliases: []
+        description: 'Разрешите игроку использовать частный портал; без игрока: покажите список'
+        args:
+          name: PORTAL
+          player: PLAYER
+      untrust:
+        name: untrust
+        aliases: []
+        description: Верните доступ игрока к частному порталу
+        args:
+          name: PORTAL
+          player: PLAYER
+      rename:
+        name: rename
+        aliases: []
+        description: Дайте порталу новое имя; его ссылка следует
+        args:
+          name: PORTAL
+          newname: NEW_NAME
+      pause:
+        name: pause
+        aliases: []
+        description: Приостановить работу портала для обслуживания без удаления его ссылки
+        args:
+          name: PORTAL
+      resume:
+        name: resume
+        aliases: []
+        description: Открыть приостановленный портал
+        args:
+          name: PORTAL
+
+      home:
+        name: home
+        aliases: []
+        description: "Открыть портал к одному из твоих домов"
+        args:
+          home: "ДОМ"
+
+      sethome:
+        name: sethome
+        aliases: []
+        description: "Установить дом здесь"
+        args:
+          home: "ДОМ"
+
+      delhome:
+        name: delhome
+        aliases: []
+        description: "Удалить дом"
+        args:
+          home: "ДОМ"
+
+      homes:
+        name: homes
+        aliases: []
+        description: "Список твоих домов"
+
+      warp:
+        name: warp
+        aliases: []
+        description: "Открыть портал к варпу"
+        args:
+          warp: "ВАРП"
+
+      setwarp:
+        name: setwarp
+        aliases: []
+        description: "Установить варп здесь (админы)"
+        args:
+          warp: "ВАРП"
+
+      delwarp:
+        name: delwarp
+        aliases: []
+        description: "Удалить варп (админы)"
+        args:
+          warp: "ВАРП"
+
+      warps:
+        name: warps
+        aliases: []
+        description: "Список варпов"
+
+      energy:
+        name: energy
+        aliases: []
+        description: "Показать энергию порталов"
+      import:
+        name: import
+        aliases: []
+        description: "Перенести дома и варпы из HuskHomes (админы)"
+        args:
+          source: SOURCE
+  home:
+    description: "Открыть портал к одному из твоих домов"
+    aliases: []
+    args:
+      home: "ДОМ"
+  sethome:
+    description: "Установить дом здесь"
+    aliases: []
+    args:
+      home: "ДОМ"
+  delhome:
+    description: "Удалить дом"
+    aliases: []
+    args:
+      home: "ДОМ"
+  homes:
+    description: "Список твоих домов"
+    aliases: []
+  warp:
+    description: "Открыть портал к варпу"
+    aliases: []
+    args:
+      warp: "ВАРП"
+  setwarp:
+    description: "Установить варп здесь (админы)"
+    aliases: []
+    args:
+      warp: "ВАРП"
+  delwarp:
+    description: "Удалить варп (админы)"
+    aliases: []
+    args:
+      warp: "ВАРП"
+  warps:
+    description: "Список варпов"
+    aliases: []
+style:
+  title: "Стиль: {name}"
+  particle: "Частицы рамки: {value}"
+  sound: "Фоновый звук: {value}"
+  arrival: "Эффект прибытия: {value}"
+  cycle-lore: "ЛКМ: далее · ПКМ: назад"
+  preview: "Предпросмотр"
+  preview-lore: "Показывает стиль только вам"
+  preview-far: "Для предпросмотра находитесь в мире портала."
+  save-failed: "Не удалось сохранить стиль."
+  choice:
+    none: "Нет"
+    end_rod: "Белые искры"
+    portal: "Портальный туман"
+    enchant: "Руны"
+    soul_fire_flame: "Пламя душ"
+    glow: "Сияние"
+    cherry_leaves: "Лепестки вишни"
+    snowflake: "Снежинки"
+    flame: "Пламя"
+    dragon_breath: "Дыхание дракона"
+    happy_villager: "Зелёные звёзды"
+    beacon: "Гул маяка"
+    amethyst: "Звон аметиста"
+    conduit: "Пульс проводника"
+    bell: "Эхо колокола"
+    flash: "Вспышка"
+    swirl: "Вихрь"
+    sparkle: "Мерцание"
+
+hours:
+  menu: "Часы работы"
+  menu-lore: "{hours}"
+  title: "Часы работы: {name}"
+  always: "Всегда открыт"
+  no-days: "нет дней"
+  day-on: "{day}: открыт"
+  day-off: "{day}: закрыт"
+  day-lore: "Нажмите, чтобы переключить день"
+  open: "Открывается в {time}"
+  close: "Закрывается в {time}"
+  time-lore: "ЛКМ +1 ч · ПКМ −1 ч · Shift ±15 мин"
+  timed: "По расписанию: {hours}"
+  always-item: "Всегда открыт"
+  toggle-lore: "Нажмите, чтобы переключить: всегда открыт или по расписанию"
+  save-failed: "<red>Не удалось сохранить часы работы."
+  closed: "<gold>🕒 {name} сейчас закрыт. Откроется через {time}."
+  bar-open: "<green>🕒 {name} открыт · закроется через {time}"
+  bar-closed: "<gold>🕒 {name} закрыт · откроется через {time}"
+  bar-always: "<green>🕒 {name} открыт"
+  bar-never: "<gray>🕒 У {name} нет открытых дней"
+  day:
+    "1": "Пн"
+    "2": "Вт"
+    "3": "Ср"
+    "4": "Чт"
+    "5": "Пт"
+    "6": "Сб"
+    "7": "Вс"
+
+panel:
+  details: "Подробности"
+  world: "Мир"
+  position: "Позиция"
+  size: "Размер"
+  owner: "Владелец"
+  access: "Доступ"
+  delete-confirm: "Удалить {name} и все его связи?"
+  link-confirm: "Связать {name} с {target}? Существующие связи будут заменены."
+  unlink-confirm: "Удалить связь портала {name}? Оба портала останутся."
+  minutes: "Минуты после полуночи (0–1439)."
+  trust-help: "Разрешить игроку {player} пользоваться этим порталом, когда он закрыт для всех. Общий доступ не изменится."
+  trust-title: "Доступ к порталам"
+  change-failed: "Не удалось применить изменение. Смотрите сообщение в чате."
+gate:
+  disabled: "<red>Порталы путешествий отключены."
+  import-started: "<gray>Читаю дома и варпы из HuskHomes …"
+  import-failed: "<red>Импорт из HuskHomes не удался: {0}"
+  import-done: "<green>Импорт из HuskHomes: добавлено домов: {0}, варпов: {1}. <gray>Уже были: {2}, мир не загружен: {3}."
+  no-homes: "<gray>У тебя ещё нет дома. Установи его командой /sethome [ИМЯ]."
+  unknown-home: "<red>Нет дома с именем {0}. <gray>См. /homes."
+  invalid-name: "<red>Используй 1–32 строчные латинские буквы, цифры, подчёркивания или дефисы."
+  home-limit: "<red>Можно иметь не больше {0} домов. Удали один командой /delhome ИМЯ."
+  home-set: "<green>Дом {0} установлен здесь."
+  home-deleted: "<yellow>Дом {0} удалён."
+  homes: "<gray>Твои дома ({1}/{2}): <white>{0}"
+  unknown-warp: "<red>Нет варпа с именем {0}. <gray>См. /warps."
+  warp-set: "<green>Варп {0} установлен здесь."
+  warp-deleted: "<yellow>Варп {0} удалён."
+  no-warps: "<gray>Варпов пока нет."
+  warps: "<gray>Варпы: <white>{0}"
+  energy-off: "<gray>Энергия порталов на этом сервере отключена."
+  energy: "<light_purple>Энергия порталов: <white>{0}/{1}</white> <gray>(полная через {2})"
+  energy-title: "Энергия порталов"
+  energy-used: "<light_purple>Энергия порталов -{0}: <white>{1}/{2}"
+  no-energy: "<red>Недостаточно энергии: этому порталу нужно {0}, у тебя {1}. <gray>Готово через {2}."
+  refunded: "<gray>Портал не использован: возвращено {0} энергии."
+  vehicle: "<red>Сначала выйди из транспорта."
+  cooldown: "<red>Подожди {0} с, прежде чем открыть новый портал."
+  no-room: "<red>Нет места для портала: встань перед стеной или свободным местом шириной 1 блок и высотой 2."
+  opened-home: "<light_purple>Портал домой ({0}) открыт на {1} с. Заходи!"
+  opened-warp: "<light_purple>Портал к варпу {0} открыт на {1} с. Заходи – другие могут пойти следом."
+  closing: "<light_purple>Портал закроется через {0} с"

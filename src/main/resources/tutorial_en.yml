@@ -1,0 +1,15 @@
+title: 'Portals'
+pages:
+  - title: 'Build a portal'
+    gif: "tutorial/build.gif"
+    text: |
+      Stand where the portal should be and create it from /vportal (or /portal). Link two of your portals and you see the other side through them.
+  - title: 'Access and trust'
+    gif: "tutorial/access.gif"
+    text: |
+      Open a portal to everyone or keep it private and trust single players. Nether and End portals get a view of the other side too.
+      Type /vportal help to see every command.
+  - title: 'Home and warp gates'
+    gif: "tutorial/gates.gif"
+    text: |
+      Set a home with /sethome and open a gate there with /home. A door-sized portal forms in the wall in front of you (or in the open) and shows the destination – walk into it within 10 seconds. /warp NAME opens a gate to a server warp that friends can follow. With portal energy on, longer trips cost more and the energy recharges over time (/vportal energy).

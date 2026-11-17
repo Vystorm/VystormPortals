@@ -1,0 +1,15 @@
+title: 'Portale'
+pages:
+  - title: 'Portal bauen'
+    gif: "tutorial/build.gif"
+    text: |
+      Stell dich dorthin, wo das Portal hin soll, und erstelle es über /vportal (oder /portal). Verknüpfe zwei deiner Portale und du siehst durch sie die andere Seite.
+  - title: 'Zugang und Vertrauen'
+    gif: "tutorial/access.gif"
+    text: |
+      Öffne ein Portal für alle oder halte es privat und vertraue einzelnen Spielern. Auch Nether- und End-Portale zeigen die andere Seite.
+      Mit /vportal help siehst du alle Befehle.
+  - title: 'Zuhause- und Warp-Portale'
+    gif: "tutorial/gates.gif"
+    text: |
+      Setze mit /sethome ein Zuhause und öffne mit /home ein Portal dorthin. In der Wand vor dir (oder frei vor dir) formt sich ein türgroßes Portal, das das Ziel zeigt – lauf innerhalb von 10 Sekunden hinein. /warp NAME öffnet ein Portal zu einem Server-Warp, dem Freunde folgen können. Mit Portalenergie kosten weite Reisen mehr, und die Energie lädt sich mit der Zeit wieder auf (/vportal energie).

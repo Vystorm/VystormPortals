@@ -1,0 +1,28 @@
+name: VystormPortals
+version: '${version}'
+main: at.esoren.vystormportals.PortalsPlugin
+api-version: '1.20.6'
+author: Esoren
+depend: [vystorm_core]
+description: Independent linked portals using the Vystorm Visuals API.
+permissions:
+  vystormportals.use:
+    default: true
+  vystormportals.end-view:
+    default: true
+  vystormportals.create:
+    default: op
+  vystormportals.admin:
+    default: op
+  vystormportals.nether-view:
+    default: true
+  vystormportals.menu:
+    default: true
+  vystormportals.home:
+    default: true
+  vystormportals.warp:
+    default: true
+  vystormportals.warp.manage:
+    default: op
+  vystormportals.energy.bypass:
+    default: false

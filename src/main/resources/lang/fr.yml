@@ -1,0 +1,470 @@
+errors:
+  unknown-portal: "Portail inconnu : {0} <gray>Voir /vportal list."
+  not-owner: "Ce portail ne vous appartient pas."
+  name-exists: "Ce nom est déjà utilisé."
+  dimensions: "La largeur et la hauteur doivent être comprises entre 2 et 8."
+  aperture: "L’ouverture du portail doit être dégagée et chargée."
+  not-linked: "Le portail {0} n’est pas relié."
+  self-link: "Un portail ne peut pas être relié à lui-même."
+  invalid-name: "Le nom doit contenir 1 à 40 lettres minuscules, chiffres, traits de soulignement ou traits d’union."
+  same-name: "Le portail {0} porte déjà ce nom."
+  owner-access: "Le propriétaire peut toujours utiliser {0}."
+  already-trusted: "Ce joueur a déjà un accès de confiance à {0}."
+  trust-limit: "Un portail accepte au maximum {0} joueurs de confiance."
+  not-trusted: "Ce joueur n’a pas d’accès de confiance à {0}."
+  unknown-player: "Joueur inconnu : {0} <gray>Vérifiez l’orthographe – le joueur doit déjà être venu sur ce serveur."
+  whole-number: "Saisissez un nombre entier à la place de {0}."
+  warmup: "L’attente doit être comprise entre 0 et 200 ticks."
+  portal-limit: "Un maximum de 256 portails est autorisé."
+trip-list: "<yellow>Vos itinéraires : {0}"
+trip-saved: "<yellow>Itinéraire {0} enregistré."
+trip-deleted: "<yellow>Itinéraire {0} supprimé."
+trip-missing: "<yellow>Aucun itinéraire personnel de ce nom."
+trip-unavailable: "<yellow>Un portail a changé, est suspendu ou inaccessible. Voyage arrêté."
+trip-preview: "<yellow>Parcours complet {0} : {1} arrêts"
+trip-stop: "<yellow>{0}. {1} — {2} ({3}, {4}, {5}) ; attente {6}s"
+trip-confirm: "<yellow>Près du premier portail, utilisez /vportal trip confirm sous 30s. Éloignez-vous ou utilisez /vportal trip cancel pour annuler."
+trip-expired: "<yellow>Aperçu expiré. Relancez /vportal trip start NOM."
+trip-busy: "<yellow>Un voyage est déjà actif ou la limite du serveur est atteinte."
+trip-origin: "<yellow>Placez-vous à quatre blocs maximum de {0}, sans véhicule ni passagers."
+trip-started: "<yellow>Voyage {0} commencé. Restez immobile entre les arrêts."
+trip-cancelled: "<yellow>Voyage annulé. Vous restez à votre position actuelle."
+trip-timeout: "<yellow>Délai dépassé ; aucune autre téléportation ne sera tentée."
+trip-unsafe: "<yellow>La prochaine sortie est dangereuse. Voyage arrêté à votre position."
+trip-arrived: "<yellow>Arrivée à {0} ({1}/{2})."
+trip-complete: "<yellow>Voyage {0} terminé."
+trip-usage: "<yellow>/vportal trip save NOM A B [C...] | list | show NOM | start NOM | confirm | cancel | delete NOM"
+# Français — UTF-8. Keep keys, placeholders and formatting tokens unchanged.
+nearby-title: '<gold>Portails accessibles dans les 256 blocs (le plus proche 10):'
+nearby-empty: <gray>Aucun portail accessible dans 256 blocs.
+nearby-entry: '<gray>{0}: {1} blocs → {2}'
+route-paused: <gold>Cette route est interrompue pour maintenance.
+status-paused: <gold>Le portail {0} est interrompu.
+status-open: <green>Portail {0} est ouvert (l'autre extrémité doit également être ouverte).
+denied: <red>Vous n'avez pas la permission pour ça.
+player-only: <red>Exécutez cette commande en jeu.
+list: '<gray>Portails : <white>{0}'
+created: <green>Portail {0} créé. Connectez-le avec /vportal link NAME TARGET.
+linked: <green>{0} et {1} sont maintenant reliés entre eux.
+deleted: <green>Portail {0} enlevé.
+updated: <green>Portail {0} mis à jour.
+invalid: '<red>Entrée non valable: {0} <gray>Appuyez sur Tab pour voir les valeurs possibles.'
+failed: <red>L'épargne a échoué. L'état précédent est conservé ; voir le journal du serveur.
+warming: <gold>Ouverture du portail en {0} secondes. Dégagez pour annuler.
+unavailable: <red>Le monde cible n'est pas chargé.
+unsafe: <red>La sortie n'est pas chargée ou n'est pas sûre de rester debout.
+cancelled: <red>Un autre plugin a annulé le téléport.
+usage: <gray>/vportal menu | create NAME [WIDTH HEIGHT] | link NAME TARGET | unlink NAME | delete NAME | access NAME public/private
+  | warmup NAME TICKS | trust NAME [PLAYER] | untrust NAME PLAYER | rename NAME NEW_NAME | info NAME | list | pause PORTAL
+  | resume PORTAL
+unlinked: <green>Le portail {0} n'est plus relié.
+renamed: <green>Le portail {0} s'appelle maintenant {1}.
+info: <gray>Portail <white>{0}</white> en {1} à {2}, taille {3}, accès {4}, échauffement {5} <white>{6}</white>, propriétaire
+  {7}
+menu-disabled: <red>Le menu portail est désactivé sur ce serveur.
+trust-disabled: <red>Les joueurs de confiance sont désactivés sur ce serveur.
+trusted: <green>{1} peut maintenant utiliser le portail {0}, même s'il est privé.
+untrusted: <green>{1} ne peut plus utiliser le portail {0}.
+trusted-list: '<gray>Confiée à {0}: <white>{1}'
+trusted-notify: <aqua>{0} vous a donné accès au portail {1}.
+untrusted-notify: <gray>{0} a repris votre accès au portail {1}.
+menu:
+  style: "✦ Style"
+  style-lore: "Particules du cadre, son et effet d’arrivée de ce portail"
+  paused: en pause
+  open: ouvert
+  pause: <gold>Portail de la pause
+  resume: <green>Reprendre le portail
+  pause-lore:
+  - <gray>Stops voyage et vues dans les deux sens.
+  - <gray>Les liens et les listes d'accès restent. Cliquez pour changer.
+  entry: Portails
+  entry-desc: Vos portails et chaque portail que vous pouvez utiliser
+  title: Portails ({page}/{pages})
+  detail-title: Portail {name}
+  link-title: Lien avec ... ({page}/{pages})
+  portal: <aqua>{name}
+  portal-lore:
+  - '<gray>État : <white>{status}'
+  - '<gray>Monde: <white>{world}</white> à <white>{position}'
+  - <gray>Taille {size}, {access}, échauffement {warmup}
+  - '<gray>Lié à : <white>{target}'
+  - '<gray>Propriétaire: <white>{owner}'
+  - <yellow>Cliquez pour plus de détails
+  detail-lore:
+  - '<gray>État : <white>{status}'
+  - '<gray>Monde: <white>{world}</white> à <white>{position}'
+  - <gray>Taille {size}, {access}, échauffement {warmup}
+  - '<gray>Lié à : <white>{target}'
+  - '<gray>Propriétaire: <white>{owner}'
+  link-target-lore:
+  - '<gray>État : <white>{status}'
+  - '<gray>Monde: <white>{world}</white> à <white>{position}'
+  - '<gray>Actuellement liés à: <white>{target}'
+  - <yellow>Cliquez pour lier les deux façons
+  public: public
+  private: privé
+  previous: <yellow>Page précédente
+  next: <yellow>Page suivante
+  close: <red>Fermer
+  back: <yellow>Retour
+  empty: <gray>Pas encore de portails
+  empty-lore:
+  - <gray>Il n'y a pas encore de portail que vous pouvez utiliser.
+  create: <green>Créer un portail ici
+  create-lore:
+  - <gray>3x3 portail où vous vous trouvez, face à votre vue.
+  - <yellow>Cliquez et saisissez un nom
+  create-title: Nouveau portail
+  create-question: 'Nom du nouveau portail (lettres, chiffres, - et _):'
+  create-fallback: <gray>Créer un portail avec /vportal create NAME [WIDTH HEIGHT].
+  access-public: '<green>Accès: public'
+  access-private: '<gray>Accès : privé'
+  access-lore:
+  - <gray>Les portails publics peuvent être utilisés par tous
+  - <gray>avec permission; les objets et les créatures voyagent aussi.
+  - <yellow>Cliquez pour changer
+  link: <aqua>Lien
+  link-lore:
+  - '<gray>Maintenant lié à: <white>{target}'
+  - <yellow>Cliquez pour choisir l'autre portail
+  unlink: <gold>Déconnecter
+  unlink-lore:
+  - <gray>Déconnecte de <white>{target}</white>.
+  - <gray>Les deux portails restent.
+  warmup: '<yellow>Échauffement : {ticks} tiques ({seconds} s)'
+  warmup-lore:
+  - <gray>clic gauche +10, clic droit -10
+  - '<gray>Poste: +50 / -50 (0 à 200 tiques)'
+  delete: <red>Supprimer le portail
+  delete-lore:
+  - <gray>Supprime le portail et ses liens.
+  - <red>Cliquez sur Maj pour supprimer
+  delete-hint: <red>Cliquez sur le bouton de suppression pour supprimer réellement {name}.
+  locate: <aqua>Montre-moi où
+  locate-lore:
+  - <gray>Surmonte le portail et vous dit
+  - <gray>C'est loin.
+  locate-near: <aqua>{name}</aqua> <gray>est à <white>{position}</white>, {distance} pâtés de maisons. Cherchez le contour.
+  locate-far: <aqua>{name}</aqua> <gray>est dans le monde <white>{world}</white> à <white>{position}</white>.
+trust-menu:
+  entry: <aqua>Accès au portail pour {player}
+  entry-lore:
+  - <gray>{player} peut utiliser {count} de vos portails {total}.
+  - <yellow>Cliquez pour choisir
+  title: 'Accès au portail: {player}'
+  trusted: <green>{name}
+  trusted-lore:
+  - <gray>{player} peuvent utiliser ce portail ({access}).
+  - <yellow>Cliquez pour récupérer l'accès
+  not-trusted: <gray>{name}
+  not-trusted-lore:
+  - <gray>{player} ne peut pas l'utiliser alors qu'il est privé ({access}).
+  - <yellow>Cliquez pour donner accès
+commands:
+  vportal:
+    description: 'Portails liés : liste, menu, création, lien, accès, échauffement et joueurs de confiance'
+    aliases: []
+    values:
+      public: public
+      private: privé
+    sub:
+      list:
+        name: list
+        aliases: []
+        description: Portails que vous pouvez utiliser et leurs cibles
+      trip:
+        name: trip
+        aliases: []
+        description: "Enregistrer, consulter et suivre un parcours à plusieurs portails"
+        args:
+          action: "ACTION"
+      nearby:
+        name: nearby
+        aliases: []
+        description: Trouvez les portails accessibles les plus proches dans votre monde
+      menu:
+        name: menu
+        aliases: []
+        description: Ouvrir le menu du portail
+      info:
+        name: info
+        aliases: []
+        description: Position, taille, accès, échauffement, cible et propriétaire d'un portail
+        args:
+          name: PORTAL
+      create:
+        name: create
+        aliases: []
+        description: Créez un portail où vous êtes debout, face à vous (2-8 blocs, par défaut 3x3)
+        args:
+          name: NAME
+          width: WIDTH
+          height: HEIGHT
+      link:
+        name: link
+        aliases: []
+        description: Relier deux de vos portails de deux façons
+        args:
+          name: PORTAL
+          target: TARGET
+      unlink:
+        name: unlink
+        aliases: []
+        description: Supprimer le lien d'un portail
+        args:
+          name: PORTAL
+      delete:
+        name: delete
+        aliases: []
+        description: Supprimer un portail
+        args:
+          name: PORTAL
+      access:
+        name: access
+        aliases: []
+        description: Ouvrir un portail à tout le monde ou seulement à vous et aux joueurs de confiance
+        args:
+          name: PORTAL
+      warmup:
+        name: warmup
+        aliases: []
+        description: Clique sur un joueur qui attend dans le portail avant de voyager
+        args:
+          name: PORTAL
+          ticks: TICKS
+      trust:
+        name: trust
+        aliases: []
+        description: 'Laissez un joueur utiliser un portail privé ; sans lecteur : affichez la liste'
+        args:
+          name: PORTAL
+          player: PLAYER
+      untrust:
+        name: untrust
+        aliases: []
+        description: Reprenez l'accès d'un joueur à un portail privé
+        args:
+          name: PORTAL
+          player: PLAYER
+      rename:
+        name: rename
+        aliases: []
+        description: Donnez un nouveau nom à un portail; son lien suit
+        args:
+          name: PORTAL
+          newname: NEW_NAME
+      pause:
+        name: pause
+        aliases: []
+        description: Pause un portail pour la maintenance sans supprimer son lien
+        args:
+          name: PORTAL
+      resume:
+        name: resume
+        aliases: []
+        description: Réouvrir un portail en pause
+        args:
+          name: PORTAL
+
+      home:
+        name: home
+        aliases: []
+        description: "Ouvrir un portail vers une de tes maisons"
+        args:
+          home: "MAISON"
+
+      sethome:
+        name: sethome
+        aliases: []
+        description: "Définir une maison ici"
+        args:
+          home: "MAISON"
+
+      delhome:
+        name: delhome
+        aliases: []
+        description: "Supprimer une maison"
+        args:
+          home: "MAISON"
+
+      homes:
+        name: homes
+        aliases: []
+        description: "Lister tes maisons"
+
+      warp:
+        name: warp
+        aliases: []
+        description: "Ouvrir un portail vers un warp"
+        args:
+          warp: "WARP"
+
+      setwarp:
+        name: setwarp
+        aliases: []
+        description: "Définir un warp ici (admins)"
+        args:
+          warp: "WARP"
+
+      delwarp:
+        name: delwarp
+        aliases: []
+        description: "Supprimer un warp (admins)"
+        args:
+          warp: "WARP"
+
+      warps:
+        name: warps
+        aliases: []
+        description: "Lister les warps"
+
+      energy:
+        name: energy
+        aliases: []
+        description: "Afficher ton énergie de portail"
+      import:
+        name: import
+        aliases: []
+        description: "Copier les homes et warps de HuskHomes (admins)"
+        args:
+          source: SOURCE
+  home:
+    description: "Ouvrir un portail vers une de tes maisons"
+    aliases: []
+    args:
+      home: "MAISON"
+  sethome:
+    description: "Définir une maison ici"
+    aliases: []
+    args:
+      home: "MAISON"
+  delhome:
+    description: "Supprimer une maison"
+    aliases: []
+    args:
+      home: "MAISON"
+  homes:
+    description: "Lister tes maisons"
+    aliases: []
+  warp:
+    description: "Ouvrir un portail vers un warp"
+    aliases: []
+    args:
+      warp: "WARP"
+  setwarp:
+    description: "Définir un warp ici (admins)"
+    aliases: []
+    args:
+      warp: "WARP"
+  delwarp:
+    description: "Supprimer un warp (admins)"
+    aliases: []
+    args:
+      warp: "WARP"
+  warps:
+    description: "Lister les warps"
+    aliases: []
+style:
+  title: "Style : {name}"
+  particle: "Particules du cadre : {value}"
+  sound: "Son ambiant : {value}"
+  arrival: "Effet d’arrivée : {value}"
+  cycle-lore: "Clic gauche : suivant · Clic droit : précédent"
+  preview: "Aperçu"
+  preview-lore: "Montre le style à toi seul"
+  preview-far: "Place-toi dans le monde du portail pour l’aperçu."
+  save-failed: "Le style n’a pas pu être enregistré."
+  choice:
+    none: "Aucun"
+    end_rod: "Étincelles blanches"
+    portal: "Brume de portail"
+    enchant: "Runes"
+    soul_fire_flame: "Flammes d’âme"
+    glow: "Lueur"
+    cherry_leaves: "Pétales de cerisier"
+    snowflake: "Flocons"
+    flame: "Flammes"
+    dragon_breath: "Souffle de dragon"
+    happy_villager: "Étoiles vertes"
+    beacon: "Bourdonnement de balise"
+    amethyst: "Carillon d’améthyste"
+    conduit: "Pulsation de conduit"
+    bell: "Écho de cloche"
+    flash: "Éclair"
+    swirl: "Tourbillon"
+    sparkle: "Scintillement"
+
+hours:
+  menu: "Horaires"
+  menu-lore: "{hours}"
+  title: "Horaires : {name}"
+  always: "Toujours ouvert"
+  no-days: "aucun jour"
+  day-on: "{day} : ouvert"
+  day-off: "{day} : fermé"
+  day-lore: "Clic pour changer ce jour"
+  open: "Ouvre à {time}"
+  close: "Ferme à {time}"
+  time-lore: "Gauche +1 h · Droite −1 h · Maj ±15 min"
+  timed: "Horaires : {hours}"
+  always-item: "Toujours ouvert"
+  toggle-lore: "Clic pour basculer entre toujours ouvert et horaires"
+  save-failed: "<red>Les horaires n’ont pas pu être enregistrés."
+  closed: "<gold>🕒 {name} est fermé pour le moment. Ouverture dans {time}."
+  bar-open: "<green>🕒 {name} est ouvert · ferme dans {time}"
+  bar-closed: "<gold>🕒 {name} est fermé · ouvre dans {time}"
+  bar-always: "<green>🕒 {name} est ouvert"
+  bar-never: "<gray>🕒 {name} n’a aucun jour d’ouverture"
+  day:
+    "1": "Lun"
+    "2": "Mar"
+    "3": "Mer"
+    "4": "Jeu"
+    "5": "Ven"
+    "6": "Sam"
+    "7": "Dim"
+
+panel:
+  details: "Détails"
+  world: "Monde"
+  position: "Position"
+  size: "Taille"
+  owner: "Propriétaire"
+  access: "Accès"
+  delete-confirm: "Supprimer {name} et ses liaisons ?"
+  link-confirm: "Relier {name} à {target} ? Les liaisons existantes seront remplacées."
+  unlink-confirm: "Retirer la liaison de {name} ? Les deux portails seront conservés."
+  minutes: "Minutes après minuit (0–1439)."
+  trust-help: "Autoriser {player} à utiliser ce portail privé. Son accès public reste inchangé."
+  trust-title: "Accès aux portails"
+  change-failed: "La modification a échoué. Consultez le message dans le chat."
+gate:
+  disabled: "<red>Les portails de voyage sont désactivés."
+  import-started: "<gray>Lecture des homes et warps de HuskHomes …"
+  import-failed: "<red>Échec de l'import HuskHomes : {0}"
+  import-done: "<green>Import HuskHomes : {0} homes et {1} warps ajoutés. <gray>Déjà présents : {2}, monde non chargé : {3}."
+  no-homes: "<gray>Tu n'as pas encore de maison. Définis-en une avec /sethome [NOM]."
+  unknown-home: "<red>Aucune maison nommée {0}. <gray>Voir /homes."
+  invalid-name: "<red>Utilise 1 à 32 lettres minuscules, chiffres, tirets bas ou tirets."
+  home-limit: "<red>Tu peux avoir au plus {0} maisons. Supprimes-en une avec /delhome NOM."
+  home-set: "<green>Maison {0} définie ici."
+  home-deleted: "<yellow>Maison {0} supprimée."
+  homes: "<gray>Tes maisons ({1}/{2}) : <white>{0}"
+  unknown-warp: "<red>Aucun warp nommé {0}. <gray>Voir /warps."
+  warp-set: "<green>Warp {0} défini ici."
+  warp-deleted: "<yellow>Warp {0} supprimé."
+  no-warps: "<gray>Il n'y a pas encore de warps."
+  warps: "<gray>Warps : <white>{0}"
+  energy-off: "<gray>L'énergie de portail est désactivée sur ce serveur."
+  energy: "<light_purple>Énergie de portail : <white>{0}/{1}</white> <gray>(pleine dans {2})"
+  energy-title: "Énergie de portail"
+  energy-used: "<light_purple>Énergie de portail -{0} : <white>{1}/{2}"
+  no-energy: "<red>Pas assez d'énergie de portail : ce portail demande {0}, tu as {1}. <gray>Prêt dans {2}."
+  refunded: "<gray>Le portail n'a pas été utilisé : {0} énergie rendue."
+  vehicle: "<red>Descends d'abord de ton véhicule."
+  cooldown: "<red>Attends {0} s avant d'ouvrir un autre portail."
+  no-room: "<red>Pas de place pour un portail : place-toi devant un mur ou un espace libre de 1 bloc de large et 2 de haut."
+  opened-home: "<light_purple>Le portail vers la maison ({0}) est ouvert {1} s. Entre !"
+  opened-warp: "<light_purple>Le portail vers le warp {0} est ouvert {1} s. Entre – les autres peuvent suivre."
+  closing: "<light_purple>Le portail se ferme dans {0} s"

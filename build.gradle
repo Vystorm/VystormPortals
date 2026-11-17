@@ -1,0 +1,66 @@
+plugins { id 'java' }
+group = 'at.esoren'
+version = '1.23.0'
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    testImplementation 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.1'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.0.1'
+    compileOnly files(providers.gradleProperty('coreJar').getOrElse('../Vystorm_Core/build/libs/Vystorm_Core-0.48.0-Vystorm-Core-26.2.jar'))
+    testImplementation files(providers.gradleProperty('coreJar').getOrElse('../Vystorm_Core/build/libs/Vystorm_Core-0.48.0-Vystorm-Core-26.2.jar'))
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 21 }
+def compatLibraries = file(providers.gradleProperty('compat1206Libraries').getOrElse((System.getProperty('user.home') + '/source/tools/smoke-1206/libraries')))
+def baselineClasspath = fileTree(compatLibraries) { include '**/*.jar' } + files(providers.gradleProperty('coreJar').getOrElse('../Vystorm_Core/build/libs/Vystorm_Core-0.48.0-Vystorm-Core-26.2.jar'))
+compileJava { classpath = baselineClasspath }
+tasks.register('compat1206', JavaCompile) {
+    source = sourceSets.main.java
+    classpath = baselineClasspath
+    destinationDirectory = layout.buildDirectory.dir('classes/compat1206')
+    javaCompiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(25) }
+}
+check.dependsOn tasks.named('compat1206')
+test { useJUnitPlatform() }
+def pluginVersion = version.toString()
+processResources { inputs.property('version', pluginVersion); filesMatching('plugin.yml') { expand(version: pluginVersion) } }
+jar { from('LICENSE'); from('PROVENANCE.md') }
+
+sourceSets {
+    modern {
+        java.srcDir 'src/modern/java'
+        compileClasspath += sourceSets.main.output + configurations.compileClasspath
+    }
+    integration {
+        java.srcDir 'integration/src'
+        resources.srcDir 'integration/resources'
+        compileClasspath += sourceSets.main.output + configurations.compileClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+jar { from sourceSets.modern.output }
+test {
+    classpath += sourceSets.modern.output
+    exclude '**/PortalLegacyRuntimeTest.class'
+}
+tasks.register('test1206', Test) {
+    dependsOn testClasses, tasks.named('compat1206')
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = files(tasks.named('compat1206').flatMap { it.destinationDirectory }) + baselineClasspath + sourceSets.test.output + configurations.testRuntimeClasspath.filter { !it.name.startsWith('paper-api-') }
+    include '**/PortalLegacyRuntimeTest.class'
+}
+check.dependsOn tasks.named('test1206')
+tasks.register('integrationJar', Jar) {
+    dependsOn integrationClasses
+    from(sourceSets.main.output) { exclude 'plugin.yml' }
+    from sourceSets.modern.output
+    from sourceSets.integration.output
+    archiveFileName = 'NativePortalAcceptance.jar'
+    destinationDirectory = layout.buildDirectory.dir('integration')
+}

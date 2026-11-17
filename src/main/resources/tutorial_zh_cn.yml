@@ -1,0 +1,15 @@
+title: '传送门'
+pages:
+  - title: '建造传送门'
+    gif: "tutorial/build.gif"
+    text: |
+      站在要放置传送门的位置，通过 /vportal（或 /portal）创建。连接两个传送门后可以看到另一侧。
+  - title: '权限与信任'
+    gif: "tutorial/access.gif"
+    text: |
+      传送门可对所有人开放，或设为私有并信任特定玩家。下界和末地传送门也能看到另一侧。
+      输入 /vportal help 查看全部命令。
+  - title: '回家与传送点传送门'
+    gif: "tutorial/gates.gif"
+    text: |
+      用 /sethome 设置家，用 /home 打开通往家的传送门。你面前的墙上（或空地上）会形成一扇门大小的传送门并显示目的地——在 10 秒内走进去。/warp 名称 会打开通往服务器传送点的传送门，朋友可以跟随。开启传送门能量后，越远的旅程消耗越多，能量会随时间恢复（/vportal 能量）。

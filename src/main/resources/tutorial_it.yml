@@ -1,0 +1,15 @@
+title: 'Portali'
+pages:
+  - title: 'Costruire un portale'
+    gif: "tutorial/build.gif"
+    text: |
+      Mettiti dove vuoi il portale e crealo da /vportal (o /portal). Collega due portali per vedere l’altro lato.
+  - title: 'Accesso e fiducia'
+    gif: "tutorial/access.gif"
+    text: |
+      Apri un portale a tutti o tienilo privato con giocatori fidati. Anche i portali del Nether e dell’End mostrano l’altro lato.
+      Scrivi /vportal help per vedere tutti i comandi.
+  - title: 'Portali casa e warp'
+    gif: "tutorial/gates.gif"
+    text: |
+      Imposta una casa con /sethome e apri un portale verso di essa con /home. Nel muro davanti a te (o all'aperto) si forma un portale grande come una porta che mostra la destinazione – entraci entro 10 secondi. /warp NOME apre un portale verso un warp del server che gli amici possono seguire. Con l'energia dei portali i viaggi lunghi costano di più e l'energia si ricarica col tempo (/vportal energy).

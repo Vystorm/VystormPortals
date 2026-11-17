@@ -1,0 +1,15 @@
+title: 'Portails'
+pages:
+  - title: 'Construire un portail'
+    gif: "tutorial/build.gif"
+    text: |
+      Placez-vous à l’endroit voulu et créez le portail via /vportal (ou /portal). Reliez deux portails pour voir l’autre côté.
+  - title: 'Accès et confiance'
+    gif: "tutorial/access.gif"
+    text: |
+      Ouvrez un portail à tous ou gardez-le privé avec des joueurs de confiance. Les portails du Nether et de l’End montrent aussi l’autre côté.
+      Tapez /vportal help pour voir toutes les commandes.
+  - title: 'Portails maison et warp'
+    gif: "tutorial/gates.gif"
+    text: |
+      Définis une maison avec /sethome et ouvre un portail vers elle avec /home. Un portail de la taille d'une porte se forme dans le mur devant toi (ou à découvert) et montre la destination – entre dedans en moins de 10 secondes. /warp NOM ouvre un portail vers un warp du serveur que tes amis peuvent suivre. Avec l'énergie de portail, les longs trajets coûtent plus et l'énergie se recharge avec le temps (/vportal energy).

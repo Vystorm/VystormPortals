@@ -1,0 +1,472 @@
+errors:
+  unknown-portal: "未知传送门：{0} <gray>请查看 /vportal list。"
+  not-owner: "这个传送门不属于你。"
+  name-exists: "此名称已被使用。"
+  dimensions: "宽度和高度必须在 2 到 8 之间。"
+  aperture: "传送门开口必须畅通且已加载。"
+  not-linked: "传送门 {0} 尚未连接。"
+  self-link: "传送门不能连接到自身。"
+  invalid-name: "传送门名称须包含 1–40 个小写英文字母、数字、下划线或连字符。"
+  same-name: "传送门 {0} 已经使用此名称。"
+  owner-access: "所有者始终可以使用 {0}。"
+  already-trusted: "此玩家已获得 {0} 的信任权限。"
+  trust-limit: "每个传送门最多允许 {0} 位受信任玩家。"
+  not-trusted: "此玩家未获得 {0} 的信任权限。"
+  unknown-player: "未知玩家：{0} <gray>请检查拼写——该玩家必须曾进入过本服务器。"
+  whole-number: "请输入整数，而不是 {0}。"
+  warmup: "预热时间必须在 0 到 200 刻之间。"
+  portal-limit: "最多允许 256 个传送门。"
+trip-list: "<yellow>你的旅行路线：{0}"
+trip-saved: "<yellow>已保存路线 {0}。"
+trip-deleted: "<yellow>已删除路线 {0}。"
+trip-missing: "<yellow>没有此名称的个人路线。"
+trip-unavailable: "<yellow>传送门已更改、暂停或无法访问。旅行已停止。"
+trip-preview: "<yellow>完整路线 {0}：共 {1} 站"
+trip-stop: "<yellow>{0}. {1} — {2}（{3}，{4}，{5}）；预热 {6}秒"
+trip-confirm: "<yellow>在首个传送门附近，30秒内输入 /vportal trip confirm。走开或使用 /vportal trip cancel 可取消。"
+trip-expired: "<yellow>预览已过期。请重新使用 /vportal trip start 名称。"
+trip-busy: "<yellow>已有旅行正在进行，或服务器旅行数量已达上限。"
+trip-origin: "<yellow>请站在距离 {0} 四格以内，且不要乘坐载具或携带乘客。"
+trip-started: "<yellow>旅行 {0} 已开始。停靠期间请保持不动。"
+trip-cancelled: "<yellow>旅行已取消。你将留在当前位置。"
+trip-timeout: "<yellow>旅行超时，不会再尝试传送。"
+trip-unsafe: "<yellow>下一出口不安全。已在当前位置停止旅行。"
+trip-arrived: "<yellow>已到达 {0}（{1}/{2}）。"
+trip-complete: "<yellow>旅行 {0} 已完成。"
+trip-usage: "<yellow>/vportal trip save 名称 A B [C...] | list | show 名称 | start 名称 | confirm | cancel | delete 名称"
+nearby-title: "<gold>256 格内可使用的传送门（最近 10 个）："
+nearby-empty: "<gray>256 格内没有可使用的传送门。"
+nearby-entry: "<gray>{0}：{1} 格 → {2}"
+route-paused: "<gold>此路线已暂停，正在维护。"
+status-paused: "<gold>传送门 {0} 已暂停。"
+status-open: "<green>传送门 {0} 已开放（另一端也必须开放）。"
+denied: "<red>你没有权限执行此操作。"
+player-only: "<red>请在游戏内执行此命令。"
+list: "<gray>传送门：<white>{0}"
+created: "<green>传送门 {0} 已创建。用 /vportal link NAME TARGET 将其连接。"
+linked: "<green>{0} 与 {1} 现已双向连接。"
+deleted: "<green>传送门 {0} 已移除。"
+updated: "<green>传送门 {0} 已更新。"
+invalid: "<red>输入无效：{0} <gray>按 Tab 键查看可用的值。"
+failed: "<red>保存失败。已保留之前的状态，详见服务器日志。"
+warming: "<gold>传送门将在 {0} 秒后开启。走开即可取消。"
+unavailable: "<red>目标世界未加载。"
+unsafe: "<red>出口未加载或无法安全站立。"
+cancelled: "<red>另一个插件取消了这次传送。"
+usage: "<gray>/vportal menu | create NAME [WIDTH HEIGHT] | link NAME TARGET | unlink NAME | delete NAME | access NAME public/private | warmup NAME TICKS | trust NAME [PLAYER] | untrust NAME PLAYER | rename NAME NEW_NAME | info NAME | list | pause 传送门 | resume 传送门"
+unlinked: "<green>传送门 {0} 已取消连接。"
+renamed: "<green>传送门 {0} 已改名为 {1}。"
+info: "<gray>传送门 <white>{0}</white> 位于 {1} 的 {2}，尺寸 {3}，访问 {4}，预热 {5} 刻，连接至 <white>{6}</white>，所有者 {7}"
+menu-disabled: "<red>本服务器已关闭传送门菜单。"
+trust-disabled: "<red>本服务器已关闭信任玩家功能。"
+trusted: "<green>{1} 现在可以使用传送门 {0}，即使它是私有的。"
+untrusted: "<green>{1} 不能再使用传送门 {0}。"
+trusted-list: "<gray>{0} 的信任玩家：<white>{1}"
+trusted-notify: "<aqua>{0} 授予了你传送门 {1} 的使用权限。"
+untrusted-notify: "<gray>{0} 收回了你对传送门 {1} 的使用权限。"
+menu:
+  style: "✦ 样式"
+  style-lore: "此传送门的边框粒子、声音和到达效果"
+  paused: "已暂停"
+  open: "已开放"
+  pause: "<gold>暂停传送门"
+  resume: "<green>重新开放传送门"
+  pause-lore:
+    - "<gray>停止双向传送和预览。"
+    - "<gray>保留连接和访问列表。点击切换。"
+  entry: "传送门"
+  entry-desc: "你的传送门以及所有你可以使用的传送门"
+  title: "传送门（{page}/{pages}）"
+  detail-title: "传送门 {name}"
+  link-title: "连接到……（{page}/{pages}）"
+  portal: "<aqua>{name}"
+  portal-lore:
+    - "<gray>状态: <white>{status}"
+    - "<gray>世界：<white>{world}</white>，位置 <white>{position}"
+    - "<gray>尺寸 {size}，{access}，预热 {warmup} 刻"
+    - "<gray>连接至：<white>{target}"
+    - "<gray>所有者：<white>{owner}"
+    - "<yellow>点击查看详情"
+  detail-lore:
+    - "<gray>状态: <white>{status}"
+    - "<gray>世界：<white>{world}</white>，位置 <white>{position}"
+    - "<gray>尺寸 {size}，{access}，预热 {warmup} 刻"
+    - "<gray>连接至：<white>{target}"
+    - "<gray>所有者：<white>{owner}"
+  link-target-lore:
+    - "<gray>状态: <white>{status}"
+    - "<gray>世界：<white>{world}</white>，位置 <white>{position}"
+    - "<gray>当前连接至：<white>{target}"
+    - "<yellow>点击进行双向连接"
+  public: "公开"
+  private: "私有"
+  previous: "<yellow>上一页"
+  next: "<yellow>下一页"
+  close: "<red>关闭"
+  back: "<yellow>返回"
+  empty: "<gray>还没有传送门"
+  empty-lore:
+    - "<gray>目前还没有你可以使用的传送门。"
+  create: "<green>在此处创建传送门"
+  create-lore:
+    - "<gray>在你所站位置创建 3x3 传送门，朝向你的视线方向。"
+    - "<yellow>点击并输入名称"
+  create-title: "新传送门"
+  create-question: "新传送门的名称（字母、数字、- 和 _）："
+  create-fallback: "<gray>使用 /vportal create NAME [WIDTH HEIGHT] 创建传送门。"
+  access-public: "<green>访问：公开"
+  access-private: "<gray>访问：私有"
+  access-lore:
+    - "<gray>拥有权限的所有人都可以使用公开传送门，"
+    - "<gray>物品和生物也能通过。"
+    - "<yellow>点击切换"
+  link: "<aqua>连接"
+  link-lore:
+    - "<gray>当前连接至：<white>{target}"
+    - "<yellow>点击选择另一个传送门"
+  unlink: "<gold>取消连接"
+  unlink-lore:
+    - "<gray>断开与 <white>{target}</white> 的连接。"
+    - "<gray>两个传送门都会保留。"
+  warmup: "<yellow>预热：{ticks} 刻（{seconds} 秒）"
+  warmup-lore:
+    - "<gray>左键 +10，右键 -10"
+    - "<gray>Shift：+50 / -50（0 到 200 刻）"
+  delete: "<red>删除传送门"
+  delete-lore:
+    - "<gray>移除该传送门及其连接。"
+    - "<red>Shift + 点击以删除"
+  delete-hint: "<red>Shift + 点击删除按钮以确认移除 {name}。"
+  locate: "<aqua>告诉我在哪"
+  locate-lore:
+    - "<gray>描出传送门的轮廓，"
+    - "<gray>并告诉你它有多远。"
+  locate-near: "<aqua>{name}</aqua> <gray>位于 <white>{position}</white>，距离 {distance} 格。请留意轮廓。"
+  locate-far: "<aqua>{name}</aqua> <gray>位于世界 <white>{world}</white> 的 <white>{position}</white>。"
+trust-menu:
+  entry: "<aqua>{player} 的传送门权限"
+  entry-lore:
+    - "<gray>{player} 可以使用你 {total} 个传送门中的 {count} 个。"
+    - "<yellow>点击选择"
+  title: "传送门权限：{player}"
+  trusted: "<green>{name}"
+  trusted-lore:
+    - "<gray>{player} 可以使用此传送门（{access}）。"
+    - "<yellow>点击收回权限"
+  not-trusted: "<gray>{name}"
+  not-trusted-lore:
+    - "<gray>此传送门为私有时，{player} 无法使用（{access}）。"
+    - "<yellow>点击授予权限"
+
+# 通过 Vystorm Core 提供的 /vportal：每位玩家看到自己语言的说明、帮助和 Tab 补全。commands.vportal 下的 "aliases" 是额外的
+# 主命令（全服生效，由管理员在 Core 配置 commands.localized-aliases 中选择语言）；子命令的 "name" 和 "aliases"
+# 在所有语言中都可使用，英文始终有效。
+commands:
+  vportal:
+    description: "相连的传送门：列表、菜单、创建、连接、访问权限、预热时间和受信任玩家"
+    aliases: [传送门]
+    values:
+      public: 公开
+      private: 私有
+    sub:
+      list:
+        name: 列表
+        aliases: []
+        description: "你可以使用的传送门及其目标"
+      trip:
+        name: 旅程
+        aliases: []
+        description: "保存、预览并使用多站传送门路线"
+        args:
+          action: "ACTION"
+      nearby:
+        name: 附近
+        aliases: []
+        description: "寻找当前世界中附近可使用的传送门"
+      menu:
+        name: 菜单
+        aliases: []
+        description: "打开传送门菜单"
+      info:
+        name: 信息
+        aliases: []
+        description: "传送门的位置、大小、访问权限、预热时间、目标和所有者"
+        args:
+          name: 传送门
+      create:
+        name: 创建
+        aliases: []
+        description: "在你站立处面向你创建传送门（2-8 格，默认 3x3）"
+        args:
+          name: 名称
+          width: 宽度
+          height: 高度
+      link:
+        name: 连接
+        aliases: []
+        description: "双向连接你的两个传送门"
+        args:
+          name: 传送门
+          target: 目标
+      unlink:
+        name: 断开
+        aliases: []
+        description: "解除传送门的连接"
+        args:
+          name: 传送门
+      delete:
+        name: 删除
+        aliases: []
+        description: "删除传送门"
+        args:
+          name: 传送门
+      access:
+        name: 访问
+        aliases: []
+        description: "向所有人开放传送门，或仅限你和受信任玩家"
+        args:
+          name: 传送门
+      warmup:
+        name: 预热
+        aliases: []
+        description: "玩家在传送门中等待多少刻后出发"
+        args:
+          name: 传送门
+          ticks: 刻数
+      trust:
+        name: 信任
+        aliases: []
+        description: "允许某位玩家使用私有传送门；不指定玩家则显示列表"
+        args:
+          name: 传送门
+          player: 玩家
+      untrust:
+        name: 取消信任
+        aliases: []
+        description: "收回某位玩家对私有传送门的访问权限"
+        args:
+          name: 传送门
+          player: 玩家
+      rename:
+        name: 重命名
+        aliases: []
+        description: "给传送门改名；连接保持不变"
+        args:
+          name: 传送门
+          newname: 新名称
+
+      pause:
+        name: 暂停
+        aliases: []
+        description: "暂停传送门以进行维护，保留连接"
+        args:
+          name: 传送门
+
+      resume:
+        name: 恢复
+        aliases: []
+        description: "重新开放已暂停的传送门"
+        args:
+          name: 传送门
+
+      home:
+        name: 家
+        aliases: []
+        description: "打开通往你的家的传送门"
+        args:
+          home: "家"
+
+      sethome:
+        name: 设置家
+        aliases: []
+        description: "在此处设置家"
+        args:
+          home: "家"
+
+      delhome:
+        name: 删除家
+        aliases: []
+        description: "删除一个家"
+        args:
+          home: "家"
+
+      homes:
+        name: 家列表
+        aliases: []
+        description: "列出你的家"
+
+      warp:
+        name: 传送点
+        aliases: []
+        description: "打开通往传送点的传送门"
+        args:
+          warp: "传送点"
+
+      setwarp:
+        name: 设置传送点
+        aliases: []
+        description: "在此处设置传送点（管理员）"
+        args:
+          warp: "传送点"
+
+      delwarp:
+        name: 删除传送点
+        aliases: []
+        description: "删除传送点（管理员）"
+        args:
+          warp: "传送点"
+
+      warps:
+        name: 传送点列表
+        aliases: []
+        description: "列出传送点"
+
+      energy:
+        name: 能量
+        aliases: []
+        description: "显示你的传送门能量"
+      import:
+        name: 导入
+        aliases: []
+        description: "从 HuskHomes 导入家和传送点（管理员）"
+        args:
+          source: SOURCE
+  home:
+    description: "打开通往你的家的传送门"
+    aliases: []
+    args:
+      home: "家"
+  sethome:
+    description: "在此处设置家"
+    aliases: []
+    args:
+      home: "家"
+  delhome:
+    description: "删除一个家"
+    aliases: []
+    args:
+      home: "家"
+  homes:
+    description: "列出你的家"
+    aliases: []
+  warp:
+    description: "打开通往传送点的传送门"
+    aliases: []
+    args:
+      warp: "传送点"
+  setwarp:
+    description: "在此处设置传送点（管理员）"
+    aliases: []
+    args:
+      warp: "传送点"
+  delwarp:
+    description: "删除传送点（管理员）"
+    aliases: []
+    args:
+      warp: "传送点"
+  warps:
+    description: "列出传送点"
+    aliases: []
+style:
+  title: "样式：{name}"
+  particle: "边框粒子：{value}"
+  sound: "环境声音：{value}"
+  arrival: "到达效果：{value}"
+  cycle-lore: "左键：下一个 · 右键：上一个"
+  preview: "预览"
+  preview-lore: "只向你展示该样式"
+  preview-far: "请站在传送门所在世界中预览。"
+  save-failed: "样式无法保存。"
+  choice:
+    none: "无"
+    end_rod: "白色火花"
+    portal: "传送门雾气"
+    enchant: "符文"
+    soul_fire_flame: "灵魂火焰"
+    glow: "微光"
+    cherry_leaves: "樱花花瓣"
+    snowflake: "雪花"
+    flame: "火焰"
+    dragon_breath: "龙息"
+    happy_villager: "绿色星星"
+    beacon: "信标嗡鸣"
+    amethyst: "紫水晶叮当"
+    conduit: "潮涌核心脉动"
+    bell: "钟声回响"
+    flash: "闪光"
+    swirl: "漩涡"
+    sparkle: "闪烁"
+
+hours:
+  menu: "开放时间"
+  menu-lore: "{hours}"
+  title: "开放时间：{name}"
+  always: "始终开放"
+  no-days: "无开放日"
+  day-on: "{day}：开放"
+  day-off: "{day}：关闭"
+  day-lore: "点击切换该日"
+  open: "{time} 开放"
+  close: "{time} 关闭"
+  time-lore: "左键 +1 小时 · 右键 −1 小时 · Shift ±15 分钟"
+  timed: "定时：{hours}"
+  always-item: "始终开放"
+  toggle-lore: "点击在始终开放与定时之间切换"
+  save-failed: "<red>无法保存开放时间。"
+  closed: "<gold>🕒 {name} 目前关闭，{time} 后开放。"
+  bar-open: "<green>🕒 {name} 开放中 · {time} 后关闭"
+  bar-closed: "<gold>🕒 {name} 已关闭 · {time} 后开放"
+  bar-always: "<green>🕒 {name} 开放中"
+  bar-never: "<gray>🕒 {name} 没有开放日"
+  day:
+    "1": "周一"
+    "2": "周二"
+    "3": "周三"
+    "4": "周四"
+    "5": "周五"
+    "6": "周六"
+    "7": "周日"
+
+panel:
+  details: "详情"
+  world: "世界"
+  position: "位置"
+  size: "大小"
+  owner: "所有者"
+  access: "访问权限"
+  delete-confirm: "删除 {name} 及其连接？"
+  link-confirm: "将 {name} 连接到 {target}？现有连接将被替换。"
+  unlink-confirm: "断开 {name} 的连接？两个传送门都会保留。"
+  minutes: "午夜后的分钟数（0–1439）。"
+  trust-help: "允许 {player} 使用设为私有的传送门。公开访问权限不受影响。"
+  trust-title: "传送门访问权限"
+  change-failed: "无法应用更改，请查看聊天消息。"
+gate:
+  disabled: "<red>旅行传送门已关闭。"
+  import-started: "<gray>正在读取 HuskHomes 的家和传送点……"
+  import-failed: "<red>HuskHomes 导入失败：{0}"
+  import-done: "<green>HuskHomes 导入：已添加 {0} 个家和 {1} 个传送点。<gray>已存在：{2}，世界未加载：{3}。"
+  no-homes: "<gray>你还没有家。用 /sethome [名称] 设置一个。"
+  unknown-home: "<red>没有名为 {0} 的家。<gray>查看 /homes。"
+  invalid-name: "<red>请使用 1–32 个小写字母、数字、下划线或连字符。"
+  home-limit: "<red>你最多可以有 {0} 个家。用 /delhome 名称 删除一个。"
+  home-set: "<green>已在此处设置家 {0}。"
+  home-deleted: "<yellow>已删除家 {0}。"
+  homes: "<gray>你的家（{1}/{2}）：<white>{0}"
+  unknown-warp: "<red>没有名为 {0} 的传送点。<gray>查看 /warps。"
+  warp-set: "<green>已在此处设置传送点 {0}。"
+  warp-deleted: "<yellow>已删除传送点 {0}。"
+  no-warps: "<gray>还没有传送点。"
+  warps: "<gray>传送点：<white>{0}"
+  energy-off: "<gray>本服务器未启用传送门能量。"
+  energy: "<light_purple>传送门能量：<white>{0}/{1}</white> <gray>（{2} 后充满）"
+  energy-title: "传送门能量"
+  energy-used: "<light_purple>传送门能量 -{0}：<white>{1}/{2}"
+  no-energy: "<red>传送门能量不足：此传送门需要 {0}，你有 {1}。<gray>{2} 后可用。"
+  refunded: "<gray>传送门未被使用：已返还 {0} 能量。"
+  vehicle: "<red>请先离开载具。"
+  cooldown: "<red>请等待 {0} 秒后再打开新的传送门。"
+  no-room: "<red>没有空间放置传送门：请站在墙前，或站在 1 格宽、2 格高的空地前。"
+  opened-home: "<light_purple>回家传送门（{0}）开启 {1} 秒。走进去！"
+  opened-warp: "<light_purple>通往传送点 {0} 的传送门开启 {1} 秒。走进去——其他人也可以跟上。"
+  closing: "<light_purple>传送门将在 {0} 秒后关闭"

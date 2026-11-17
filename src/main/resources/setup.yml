@@ -1,0 +1,267 @@
+{
+  "version": 1,
+  "intro": {
+    "en": "Portals are ready to use. A few choices decide how travel feels on your server.",
+    "de": "Portale sind sofort nutzbar. Ein paar Entscheidungen legen fest, wie sich Reisen auf deinem Server anfühlt.",
+    "fr": "Les portails sont prêts. Quelques choix définissent les voyages sur votre serveur.",
+    "it": "I portali sono pronti. Alcune scelte definiscono i viaggi sul tuo server.",
+    "pt_br": "Os portais estão prontos. Algumas escolhas definem as viagens no seu servidor.",
+    "ru": "Порталы готовы. Несколько решений определят, как работают путешествия.",
+    "zh_cn": "传送门已可使用。几个选项决定服务器上的传送体验。"
+  },
+  "questions": [
+    {
+      "id": "instant",
+      "text": {
+        "en": "Travel through Nether portals without the usual wait?",
+        "de": "Sollen Nether-Portale ohne die übliche Wartezeit reisen?",
+        "fr": "Voyager par les portails du Nether sans l’attente habituelle ?",
+        "it": "Viaggiare nei portali del Nether senza la solita attesa?",
+        "pt_br": "Viajar pelos portais do Nether sem a espera normal?",
+        "ru": "Перемещаться через порталы Нижнего мира без ожидания?",
+        "zh_cn": "穿过下界传送门时取消等待？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:instant-travel": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:instant-travel": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "entities",
+      "text": {
+        "en": "What may pass through public portals besides players?",
+        "de": "Was darf außer Spielern durch öffentliche Portale?",
+        "fr": "Que peut traverser les portails publics en plus des joueurs ?",
+        "it": "Cosa può attraversare i portali pubblici oltre ai giocatori?",
+        "pt_br": "O que pode atravessar portais públicos além de jogadores?",
+        "ru": "Что, кроме игроков, проходит через публичные порталы?",
+        "zh_cn": "除玩家外，什么可以穿过公共传送门？"
+      },
+      "type": "choice",
+      "recommended": "all",
+      "options": [
+        {
+          "id": "all",
+          "label": {
+            "en": "Items, projectiles, mobs and vehicles",
+            "de": "Items, Geschosse, Mobs und Fahrzeuge",
+            "fr": "Objets, projectiles, créatures et véhicules",
+            "it": "Oggetti, proiettili, mob e veicoli",
+            "pt_br": "Itens, projéteis, criaturas e veículos",
+            "ru": "Предметы, снаряды, мобы и транспорт",
+            "zh_cn": "物品、弹射物、生物和载具"
+          },
+          "set": {
+            "config.yml:entity-travel.enabled": true,
+            "config.yml:entity-travel.objects": true,
+            "config.yml:entity-travel.projectiles": true,
+            "config.yml:entity-travel.mobs": true,
+            "config.yml:entity-travel.vehicles": true
+          }
+        },
+        {
+          "id": "objects",
+          "label": {
+            "en": "Only items and vehicles",
+            "de": "Nur Items und Fahrzeuge",
+            "fr": "Objets et véhicules seulement",
+            "it": "Solo oggetti e veicoli",
+            "pt_br": "Só itens e veículos",
+            "ru": "Только предметы и транспорт",
+            "zh_cn": "仅物品和载具"
+          },
+          "set": {
+            "config.yml:entity-travel.enabled": true,
+            "config.yml:entity-travel.objects": true,
+            "config.yml:entity-travel.projectiles": false,
+            "config.yml:entity-travel.mobs": false,
+            "config.yml:entity-travel.vehicles": true
+          }
+        },
+        {
+          "id": "none",
+          "label": {
+            "en": "Players only",
+            "de": "Nur Spieler",
+            "fr": "Joueurs seulement",
+            "it": "Solo giocatori",
+            "pt_br": "Só jogadores",
+            "ru": "Только игроки",
+            "zh_cn": "仅玩家"
+          },
+          "set": {
+            "config.yml:entity-travel.enabled": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "trust",
+      "text": {
+        "en": "May owners share private portals with single players?",
+        "de": "Dürfen Besitzer private Portale mit einzelnen Spielern teilen?",
+        "fr": "Les propriétaires peuvent-ils partager des portails privés avec certains joueurs ?",
+        "it": "I proprietari possono condividere portali privati con singoli giocatori?",
+        "pt_br": "Donos podem compartilhar portais privados com jogadores específicos?",
+        "ru": "Могут ли владельцы открывать личные порталы отдельным игрокам?",
+        "zh_cn": "所有者可以与个别玩家共享私人传送门吗？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:trust.enabled": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:trust.enabled": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "text": {
+        "en": "Show the portal list in the menu?",
+        "de": "Portal-Liste im Menü anzeigen?",
+        "fr": "Afficher la liste des portails dans le menu ?",
+        "it": "Mostrare l’elenco dei portali nel menu?",
+        "pt_br": "Mostrar a lista de portais no menu?",
+        "ru": "Показывать список порталов в меню?",
+        "zh_cn": "在菜单中显示传送门列表？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:menu.enabled": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:menu.enabled": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "hours",
+      "text": {
+        "en": "Allow timed portals (opening hours per portal)?",
+        "de": "Zeitgesteuerte Portale erlauben (Öffnungszeiten pro Portal)?",
+        "fr": "Autoriser les portails à horaires (horaires par portail) ?",
+        "it": "Consentire i portali a orario (orari per portale)?",
+        "pt_br": "Permitir portais com horário (horário por portal)?",
+        "ru": "Разрешить порталы по расписанию (часы работы для каждого портала)?",
+        "zh_cn": "允许定时传送门（每个传送门的开放时间）？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:opening-hours.enabled": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:opening-hours.enabled": false
+          }
+        }
+      ]
+    }
+  ]
+}

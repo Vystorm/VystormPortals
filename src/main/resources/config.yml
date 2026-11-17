@@ -1,0 +1,92 @@
+# Skip manual warmups and set native Nether survival/creative dwell time to zero.
+# Applies to all loaded worlds; previous gamerules are restored on normal disable.
+# World changes may still show Minecraft's loading screen.
+instant-travel: true
+
+# Native Minecraft End portals: vanilla owns all transitions.
+end-portals:
+  enabled: true
+  return-view: true
+  # Bounded asynchronous 3x3 target loading.
+  # Prepare the native arrival platform only if its entire volume is empty.
+  prepare-arrival-platform: true
+  generate-destination-chunks: true
+  # End gateways become a one-block window onto their exit once the exit is known (after the first trip).
+  gateways: true
+# Texts: plugins/VystormPortals/lang/en.yml and de.yml (Vystorm Core language system, player language).
+# Texts that you changed under "messages:" in older versions keep working and win over the language files.
+
+# Native lit Nether portals automatically receive a visual view and a prepared counterpart.
+nether-portals:
+  enabled: true
+  prepare-counterpart: true
+# Optional target world names for multiworld plugins, keyed by source-world UUID.
+# world-links:
+#   <source-world-uuid>:
+#     nether: world_nether
+#     end: world_the_end
+#     overworld: world
+world-links: {}
+
+# Items, XP orbs, TNT, falling blocks, arrows/snowballs/ender pearls, mobs and empty minecarts/boats
+# fly through PUBLIC manual portals (both ends public) and keep their momentum. Players are unaffected.
+# Destinations must be loaded (they are while someone looks through the portal); otherwise the entity just passes the frame.
+# Ender dragon, wither and fishing hooks never travel. Changes need a restart.
+entity-travel:
+  enabled: true
+  objects: true
+  projectiles: true
+  mobs: true
+  vehicles: true
+  max-per-tick: 16
+
+# Portal menu (1.6.0): /vportal menu and an entry in Core's /vmenu (World). Lists every portal you may use;
+# owners and admins switch access, link, unlink, change the warmup, delete and create portals there.
+menu:
+  enabled: true
+
+# Trusted players (1.6.0): owners let single players use a private portal (/vportal trust NAME PLAYER).
+# max-per-portal: 1 to 64. player-menu: "Portal access" entry in the Core player menu (sneak + right-click a player).
+# enabled: false ignores saved trust lists but keeps them in portals.yml.
+trust:
+  enabled: true
+  max-per-portal: 16
+  player-menu: true
+
+# Timed portals: owners set opening hours per portal in the portal menu (days of the week and a daily time window,
+# also past midnight). Outside them the portal refuses travel and tells the next opening time; players near a timed
+# portal see a countdown in the action bar. Portals without hours are always open.
+opening-hours:
+  enabled: true
+  # Time zone for the hours, e.g. Europe/Berlin; empty = the server's time zone.
+  timezone: ""
+
+# Travel gates (1.21.0): /home and /warp open a door-sized (1x2) portal in the wall in front of you – or free
+# standing when there is no wall – that shows the destination.
+# Walk into the space to travel; after lifetime-seconds the gate breaks down. Home gates are only for their opener;
+# warp gates also take along everybody who may use that warp (take-others-along). Gates are never saved.
+# Commands: /vportal home|sethome|delhome|homes|warp|setwarp|delwarp|warps|energy, and with short-commands also
+# /home, /sethome, /delhome, /homes, /warp, /setwarp, /delwarp, /warps (turn off if another plugin owns them).
+travel-gates:
+  enabled: true
+  short-commands: true
+  lifetime-seconds: 10
+  # Seconds between two gates of one player (vystormportals.energy.bypass skips it).
+  cooldown-seconds: 3
+  homes:
+    # Homes per player; permission vystormportals.homes.N (1..100) allows more.
+    max: 3
+  warps:
+    take-others-along: true
+    # true = every warp needs vystormportals.warp.NAME (or vystormportals.warp.*).
+    permission-per-warp: false
+  # Portal energy: players have up to max energy that recharges over time (also offline). A gate costs
+  # base-cost + cost-per-100-blocks for every 100 blocks of distance, or base-cost + other-world-cost into another
+  # world – never more than max, so a full bar always opens one gate. Unused gates give their energy back.
+  energy:
+    enabled: false
+    max: 100
+    recharge-per-minute: 5
+    base-cost: 5
+    cost-per-100-blocks: 1
+    other-world-cost: 25

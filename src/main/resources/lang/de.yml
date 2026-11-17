@@ -1,0 +1,472 @@
+errors:
+  unknown-portal: "Unbekanntes Portal: {0} <gray>Siehe /vportal list."
+  not-owner: "Dieses Portal gehört dir nicht."
+  name-exists: "Dieser Name ist bereits vergeben."
+  dimensions: "Breite und Höhe müssen zwischen 2 und 8 liegen."
+  aperture: "Die Portalöffnung muss frei und geladen sein."
+  not-linked: "Portal {0} ist nicht verbunden."
+  self-link: "Ein Portal kann nicht mit sich selbst verbunden werden."
+  invalid-name: "Verwende für den Portalnamen 1–40 Kleinbuchstaben, Ziffern, Unterstriche oder Bindestriche."
+  same-name: "Portal {0} hat bereits diesen Namen."
+  owner-access: "Der Besitzer kann {0} immer benutzen."
+  already-trusted: "Dieser Spieler hat bereits Zugang zu {0}."
+  trust-limit: "Pro Portal sind höchstens {0} vertraute Spieler erlaubt."
+  not-trusted: "Dieser Spieler hat keinen vertrauten Zugang zu {0}."
+  unknown-player: "Unbekannter Spieler: {0} <gray>Prüfe die Schreibweise – der Spieler muss schon einmal hier gewesen sein."
+  whole-number: "Gib statt {0} eine ganze Zahl ein."
+  warmup: "Die Wartezeit muss zwischen 0 und 200 Ticks liegen."
+  portal-limit: "Es sind höchstens 256 Portale erlaubt."
+trip-list: "<yellow>Deine Reiserouten: {0}"
+trip-saved: "<yellow>Reiseroute {0} gespeichert."
+trip-deleted: "<yellow>Reiseroute {0} gelöscht."
+trip-missing: "<yellow>Keine eigene Reiseroute mit diesem Namen."
+trip-unavailable: "<yellow>Ein Portal wurde geändert, pausiert oder ist nicht mehr zugänglich. Reise gestoppt."
+trip-preview: "<yellow>Vollständige Route {0}: {1} Halte"
+trip-stop: "<yellow>{0}. {1} — {2} ({3}, {4}, {5}); Wartezeit {6}s"
+trip-confirm: "<yellow>Nahe dem ersten Portal innerhalb von 30s /vportal trip confirm eingeben. Weggehen oder /vportal trip cancel bricht ab."
+trip-expired: "<yellow>Vorschau abgelaufen. Mit /vportal trip start NAME erneut ansehen."
+trip-busy: "<yellow>Eine Reise läuft bereits oder das Reiselimit des Servers ist erreicht."
+trip-origin: "<yellow>Stelle dich höchstens vier Blöcke von {0} entfernt auf, ohne Fahrzeug oder Passagiere."
+trip-started: "<yellow>Reise {0} gestartet. Zwischen den Halten stehen bleiben."
+trip-cancelled: "<yellow>Reise abgebrochen. Du bleibst an deiner aktuellen Position."
+trip-timeout: "<yellow>Zeitlimit erreicht; es wird keine weitere Teleportation versucht."
+trip-unsafe: "<yellow>Der nächste Ausgang ist unsicher. Reise an der aktuellen Position gestoppt."
+trip-arrived: "<yellow>Ankunft in {0} ({1}/{2})."
+trip-complete: "<yellow>Reise {0} abgeschlossen."
+trip-usage: "<yellow>/vportal trip save NAME A B [C...] | list | show NAME | start NAME | confirm | cancel | delete NAME"
+nearby-title: "<gold>Erreichbare Portale im Umkreis von 256 Blöcken (nächste 10):"
+nearby-empty: "<gray>Keine erreichbaren Portale im Umkreis von 256 Blöcken."
+nearby-entry: "<gray>{0}: {1} Blöcke → {2}"
+route-paused: "<gold>Diese Verbindung ist wegen Wartung pausiert."
+status-paused: "<gold>Portal {0} ist pausiert."
+status-open: "<green>Portal {0} ist offen (auch das Gegenportal muss offen sein)."
+denied: "<red>Dafür fehlt dir die Berechtigung."
+player-only: "<red>Diesen Befehl im Spiel ausführen."
+list: "<gray>Portale: <white>{0}"
+created: "<green>Portal {0} angelegt. Mit /vportal link NAME ZIEL verbinden."
+linked: "<green>{0} und {1} sind in beide Richtungen verbunden."
+deleted: "<green>Portal {0} entfernt."
+updated: "<green>Portal {0} aktualisiert."
+invalid: "<red>Ungültige Eingabe: {0} <gray>Mit Tab siehst du gültige Werte."
+failed: "<red>Speichern fehlgeschlagen. Bisheriger Stand bleibt erhalten; siehe Serverlog."
+warming: "<gold>Portal öffnet in {0} Sekunden. Zum Abbrechen weggehen."
+unavailable: "<red>Die Zielwelt ist nicht geladen."
+unsafe: "<red>Der Ausgang ist nicht geladen oder nicht sicher begehbar."
+cancelled: "<red>Die Teleportation wurde von einem anderen Plugin abgebrochen."
+usage: "<gray>/vportal menu | create NAME [BREITE HÖHE] | link NAME ZIEL | unlink NAME | delete NAME | access NAME public/private | warmup NAME TICKS | trust NAME [SPIELER] | untrust NAME SPIELER | rename NAME NEUER_NAME | info NAME | list | pause PORTAL | resume PORTAL"
+unlinked: "<green>Portal {0} ist nicht mehr verbunden."
+renamed: "<green>Portal {0} heißt jetzt {1}."
+info: "<gray>Portal <white>{0}</white> in {1} bei {2}, Größe {3}, Zugriff {4}, Wartezeit {5} Ticks, verbunden mit <white>{6}</white>, Besitzer {7}"
+menu-disabled: "<red>Das Portalmenü ist auf diesem Server ausgeschaltet."
+trust-disabled: "<red>Vertraute Spieler sind auf diesem Server ausgeschaltet."
+trusted: "<green>{1} darf Portal {0} jetzt benutzen, auch wenn es privat ist."
+untrusted: "<green>{1} darf Portal {0} nicht mehr benutzen."
+trusted-list: "<gray>Vertraut bei {0}: <white>{1}"
+trusted-notify: "<aqua>{0} hat dir Zugang zu Portal {1} gegeben."
+untrusted-notify: "<gray>{0} hat dir den Zugang zu Portal {1} wieder entzogen."
+menu:
+  style: "✦ Stil"
+  style-lore: "Rahmen-Partikel, Klang und Ankunftseffekt dieses Portals"
+  paused: "pausiert"
+  open: "offen"
+  pause: "<gold>Portal pausieren"
+  resume: "<green>Portal wieder öffnen"
+  pause-lore:
+    - "<gray>Stoppt Reisen und Vorschauen in beide Richtungen."
+    - "<gray>Verbindungen und Zugriffe bleiben. Klicken zum Umschalten."
+  entry: "Portale"
+  entry-desc: "Deine Portale und alle, die du benutzen darfst"
+  title: "Portale ({page}/{pages})"
+  detail-title: "Portal {name}"
+  link-title: "Verbinden mit ... ({page}/{pages})"
+  portal: "<aqua>{name}"
+  portal-lore:
+    - "<gray>Status: <white>{status}"
+    - "<gray>Welt: <white>{world}</white> bei <white>{position}"
+    - "<gray>Größe {size}, {access}, Wartezeit {warmup} Ticks"
+    - "<gray>Verbunden mit: <white>{target}"
+    - "<gray>Besitzer: <white>{owner}"
+    - "<yellow>Klicken für Details"
+  detail-lore:
+    - "<gray>Status: <white>{status}"
+    - "<gray>Welt: <white>{world}</white> bei <white>{position}"
+    - "<gray>Größe {size}, {access}, Wartezeit {warmup} Ticks"
+    - "<gray>Verbunden mit: <white>{target}"
+    - "<gray>Besitzer: <white>{owner}"
+  link-target-lore:
+    - "<gray>Status: <white>{status}"
+    - "<gray>Welt: <white>{world}</white> bei <white>{position}"
+    - "<gray>Derzeit verbunden mit: <white>{target}"
+    - "<yellow>Klicken, um beide zu verbinden"
+  public: "öffentlich"
+  private: "privat"
+  previous: "<yellow>Vorherige Seite"
+  next: "<yellow>Nächste Seite"
+  close: "<red>Schließen"
+  back: "<yellow>Zurück"
+  empty: "<gray>Noch keine Portale"
+  empty-lore:
+    - "<gray>Es gibt noch kein Portal, das du benutzen darfst."
+  create: "<green>Hier ein Portal bauen"
+  create-lore:
+    - "<gray>3×3-Portal an deiner Position, in Blickrichtung."
+    - "<yellow>Klicken und Namen eingeben"
+  create-title: "Neues Portal"
+  create-question: "Name des neuen Portals (Buchstaben, Ziffern, - und _):"
+  create-fallback: "<gray>Portal bauen mit /vportal create NAME [BREITE HÖHE]."
+  access-public: "<green>Zugriff: öffentlich"
+  access-private: "<gray>Zugriff: privat"
+  access-lore:
+    - "<gray>Öffentliche Portale darf jeder mit Berechtigung"
+    - "<gray>benutzen; auch Gegenstände und Mobs reisen mit."
+    - "<yellow>Klicken zum Umschalten"
+  link: "<aqua>Verbinden"
+  link-lore:
+    - "<gray>Derzeit verbunden mit: <white>{target}"
+    - "<yellow>Klicken und Gegenstück wählen"
+  unlink: "<gold>Trennen"
+  unlink-lore:
+    - "<gray>Trennt die Verbindung zu <white>{target}</white>."
+    - "<gray>Beide Portale bleiben bestehen."
+  warmup: "<yellow>Wartezeit: {ticks} Ticks ({seconds} s)"
+  warmup-lore:
+    - "<gray>Linksklick +10, Rechtsklick -10"
+    - "<gray>Mit Shift: +50 / -50 (0 bis 200 Ticks)"
+  delete: "<red>Portal löschen"
+  delete-lore:
+    - "<gray>Entfernt das Portal und seine Verbindungen."
+    - "<red>Shift-Klick zum Löschen"
+  delete-hint: "<red>Zum endgültigen Löschen von {name} den Lösch-Knopf mit Shift anklicken."
+  locate: "<aqua>Wo ist es?"
+  locate-lore:
+    - "<gray>Zeigt den Umriss des Portals"
+    - "<gray>und wie weit es entfernt ist."
+  locate-near: "<aqua>{name}</aqua> <gray>steht bei <white>{position}</white>, {distance} Blöcke entfernt. Achte auf den Umriss."
+  locate-far: "<aqua>{name}</aqua> <gray>steht in der Welt <white>{world}</white> bei <white>{position}</white>."
+trust-menu:
+  entry: "<aqua>Portalzugang für {player}"
+  entry-lore:
+    - "<gray>{player} darf {count} deiner {total} Portale benutzen."
+    - "<yellow>Klicken zum Auswählen"
+  title: "Portalzugang: {player}"
+  trusted: "<green>{name}"
+  trusted-lore:
+    - "<gray>{player} darf dieses Portal benutzen ({access})."
+    - "<yellow>Klicken, um den Zugang zu entziehen"
+  not-trusted: "<gray>{name}"
+  not-trusted-lore:
+    - "<gray>{player} darf es nicht benutzen, solange es privat ist ({access})."
+    - "<yellow>Klicken, um Zugang zu geben"
+
+# /vportal über Vystorm Core: Beschreibung, Hilfe und Tab-Vervollständigung je Spieler. "aliases" unter commands.vportal
+# sind zusätzliche Hauptbefehle (serverweit, der Admin wählt die Sprachen: Core-Konfig commands.localized-aliases);
+# "name" und "aliases" eines Unterbefehls werden in jeder Sprache verstanden, Englisch geht immer.
+commands:
+  vportal:
+    description: "Verbundene Portale: Liste, Menü, anlegen, verbinden, Zugang, Wartezeit und vertraute Spieler"
+    aliases: [portale]
+    values:
+      public: öffentlich
+      private: privat
+    sub:
+      list:
+        name: liste
+        aliases: []
+        description: "Portale, die du benutzen darfst, und ihre Ziele"
+      trip:
+        name: reise
+        aliases: []
+        description: "Portalreisen mit mehreren Halten speichern, ansehen und durchführen"
+        args:
+          action: "ACTION"
+      nearby:
+        name: umgebung
+        aliases: []
+        description: "Nahe erreichbare Portale in deiner Welt finden"
+      menu:
+        name: menü
+        aliases: [menue]
+        description: "Portalmenü öffnen"
+      info:
+        name: info
+        aliases: []
+        description: "Position, Größe, Zugang, Wartezeit, Ziel und Besitzer eines Portals"
+        args:
+          name: PORTAL
+      create:
+        name: erstellen
+        aliases: [anlegen]
+        description: "Portal dort anlegen, wo du stehst, dir zugewandt (2-8 Blöcke, Standard 3x3)"
+        args:
+          name: NAME
+          width: BREITE
+          height: HÖHE
+      link:
+        name: verbinden
+        aliases: []
+        description: "Zwei deiner Portale in beide Richtungen verbinden"
+        args:
+          name: PORTAL
+          target: ZIEL
+      unlink:
+        name: trennen
+        aliases: []
+        description: "Verbindung eines Portals lösen"
+        args:
+          name: PORTAL
+      delete:
+        name: entfernen
+        aliases: []
+        description: "Portal entfernen"
+        args:
+          name: PORTAL
+      access:
+        name: zugang
+        aliases: []
+        description: "Portal für alle öffnen oder nur für dich und vertraute Spieler"
+        args:
+          name: PORTAL
+      warmup:
+        name: wartezeit
+        aliases: []
+        description: "Ticks, die ein Spieler im Portal wartet, bevor er reist"
+        args:
+          name: PORTAL
+          ticks: TICKS
+      trust:
+        name: vertrauen
+        aliases: []
+        description: "Einen Spieler ein privates Portal benutzen lassen; ohne Spieler: Liste zeigen"
+        args:
+          name: PORTAL
+          player: SPIELER
+      untrust:
+        name: entziehen
+        aliases: []
+        description: "Einem Spieler den Zugang zu einem privaten Portal wieder nehmen"
+        args:
+          name: PORTAL
+          player: SPIELER
+      rename:
+        name: umbenennen
+        aliases: []
+        description: "Einem Portal einen neuen Namen geben; die Verbindung bleibt"
+        args:
+          name: PORTAL
+          newname: NEUER_NAME
+
+      pause:
+        name: pausieren
+        aliases: []
+        description: "Portal für Wartung pausieren, ohne die Verbindung zu entfernen"
+        args:
+          name: PORTAL
+
+      resume:
+        name: fortsetzen
+        aliases: []
+        description: "Ein pausiertes Portal wieder öffnen"
+        args:
+          name: PORTAL
+
+      home:
+        name: home
+        aliases: []
+        description: "Ein Portal zu einem deiner Zuhause öffnen"
+        args:
+          home: "ZUHAUSE"
+
+      sethome:
+        name: sethome
+        aliases: []
+        description: "Ein Zuhause hier setzen"
+        args:
+          home: "ZUHAUSE"
+
+      delhome:
+        name: delhome
+        aliases: []
+        description: "Ein Zuhause löschen"
+        args:
+          home: "ZUHAUSE"
+
+      homes:
+        name: homes
+        aliases: []
+        description: "Deine Zuhause auflisten"
+
+      warp:
+        name: warp
+        aliases: []
+        description: "Ein Portal zu einem Warp öffnen"
+        args:
+          warp: "WARP"
+
+      setwarp:
+        name: setwarp
+        aliases: []
+        description: "Einen Warp hier setzen (Admins)"
+        args:
+          warp: "WARP"
+
+      delwarp:
+        name: delwarp
+        aliases: []
+        description: "Einen Warp löschen (Admins)"
+        args:
+          warp: "WARP"
+
+      warps:
+        name: warps
+        aliases: []
+        description: "Die Warps auflisten"
+
+      energy:
+        name: energie
+        aliases: []
+        description: "Deine Portalenergie anzeigen"
+      import:
+        name: import
+        aliases: []
+        description: "Zuhause und Warps aus HuskHomes übernehmen (Admins)"
+        args:
+          source: SOURCE
+  home:
+    description: "Ein Portal zu einem deiner Zuhause öffnen"
+    aliases: []
+    args:
+      home: "ZUHAUSE"
+  sethome:
+    description: "Ein Zuhause hier setzen"
+    aliases: []
+    args:
+      home: "ZUHAUSE"
+  delhome:
+    description: "Ein Zuhause löschen"
+    aliases: []
+    args:
+      home: "ZUHAUSE"
+  homes:
+    description: "Deine Zuhause auflisten"
+    aliases: []
+  warp:
+    description: "Ein Portal zu einem Warp öffnen"
+    aliases: []
+    args:
+      warp: "WARP"
+  setwarp:
+    description: "Einen Warp hier setzen (Admins)"
+    aliases: []
+    args:
+      warp: "WARP"
+  delwarp:
+    description: "Einen Warp löschen (Admins)"
+    aliases: []
+    args:
+      warp: "WARP"
+  warps:
+    description: "Die Warps auflisten"
+    aliases: []
+style:
+  title: "Stil: {name}"
+  particle: "Rahmen-Partikel: {value}"
+  sound: "Umgebungsklang: {value}"
+  arrival: "Ankunftseffekt: {value}"
+  cycle-lore: "Linksklick: weiter · Rechtsklick: zurück"
+  preview: "Vorschau"
+  preview-lore: "Zeigt den Stil nur dir"
+  preview-far: "Stell dich für die Vorschau in die Welt des Portals."
+  save-failed: "Der Stil konnte nicht gespeichert werden."
+  choice:
+    none: "Keine"
+    end_rod: "Weiße Funken"
+    portal: "Portalnebel"
+    enchant: "Runen"
+    soul_fire_flame: "Seelenflammen"
+    glow: "Leuchten"
+    cherry_leaves: "Kirschblüten"
+    snowflake: "Schneeflocken"
+    flame: "Flammen"
+    dragon_breath: "Drachenatem"
+    happy_villager: "Grüne Sterne"
+    beacon: "Leuchtfeuer-Summen"
+    amethyst: "Amethyst-Klang"
+    conduit: "Aquisitor-Puls"
+    bell: "Glockenhall"
+    flash: "Blitz"
+    swirl: "Wirbel"
+    sparkle: "Funkeln"
+
+hours:
+  menu: "Öffnungszeiten"
+  menu-lore: "{hours}"
+  title: "Öffnungszeiten: {name}"
+  always: "Immer offen"
+  no-days: "keine Tage"
+  day-on: "{day}: offen"
+  day-off: "{day}: geschlossen"
+  day-lore: "Klick zum Umschalten dieses Tages"
+  open: "Öffnet um {time}"
+  close: "Schließt um {time}"
+  time-lore: "Links +1 Std · Rechts −1 Std · Shift ±15 min"
+  timed: "Zeitgesteuert: {hours}"
+  always-item: "Immer offen"
+  toggle-lore: "Klick wechselt zwischen immer offen und Öffnungszeiten"
+  save-failed: "<red>Die Öffnungszeiten konnten nicht gespeichert werden."
+  closed: "<gold>🕒 {name} ist gerade geschlossen. Öffnet in {time}."
+  bar-open: "<green>🕒 {name} ist offen · schließt in {time}"
+  bar-closed: "<gold>🕒 {name} ist geschlossen · öffnet in {time}"
+  bar-always: "<green>🕒 {name} ist offen"
+  bar-never: "<gray>🕒 {name} hat keine offenen Tage"
+  day:
+    "1": "Mo"
+    "2": "Di"
+    "3": "Mi"
+    "4": "Do"
+    "5": "Fr"
+    "6": "Sa"
+    "7": "So"
+
+panel:
+  details: "Details"
+  world: "Welt"
+  position: "Position"
+  size: "Größe"
+  owner: "Besitzer"
+  access: "Zugang"
+  delete-confirm: "{name} und seine Verbindungen löschen?"
+  link-confirm: "{name} mit {target} verbinden? Bestehende Verbindungen werden ersetzt."
+  unlink-confirm: "Die Verbindung von {name} entfernen? Beide Portale bleiben erhalten."
+  minutes: "Minuten nach Mitternacht (0–1439)."
+  trust-help: "{player} darf dieses Portal auch nutzen, wenn es privat ist. Öffentlicher Zugang bleibt unverändert."
+  trust-title: "Portalzugang"
+  change-failed: "Die Änderung konnte nicht übernommen werden. Sieh in den Chat."
+gate:
+  disabled: "<red>Reiseportale sind ausgeschaltet."
+  import-started: "<gray>Lese Zuhause und Warps aus HuskHomes …"
+  import-failed: "<red>HuskHomes-Import fehlgeschlagen: {0}"
+  import-done: "<green>HuskHomes-Import: {0} Zuhause und {1} Warps übernommen. <gray>Schon vorhanden: {2}, Welt nicht geladen: {3}."
+  no-homes: "<gray>Du hast noch kein Zuhause. Setze eins mit /sethome [NAME]."
+  unknown-home: "<red>Kein Zuhause namens {0}. <gray>Siehe /homes."
+  invalid-name: "<red>Nutze 1–32 Kleinbuchstaben, Ziffern, Unterstriche oder Bindestriche."
+  home-limit: "<red>Du kannst höchstens {0} Zuhause haben. Lösche eins mit /delhome NAME."
+  home-set: "<green>Zuhause {0} hier gesetzt."
+  home-deleted: "<yellow>Zuhause {0} gelöscht."
+  homes: "<gray>Deine Zuhause ({1}/{2}): <white>{0}"
+  unknown-warp: "<red>Kein Warp namens {0}. <gray>Siehe /warps."
+  warp-set: "<green>Warp {0} hier gesetzt."
+  warp-deleted: "<yellow>Warp {0} gelöscht."
+  no-warps: "<gray>Es gibt noch keine Warps."
+  warps: "<gray>Warps: <white>{0}"
+  energy-off: "<gray>Portalenergie ist auf diesem Server ausgeschaltet."
+  energy: "<light_purple>Portalenergie: <white>{0}/{1}</white> <gray>(voll in {2})"
+  energy-title: "Portalenergie"
+  energy-used: "<light_purple>Portalenergie -{0}: <white>{1}/{2}"
+  no-energy: "<red>Zu wenig Portalenergie: dieses Portal braucht {0}, du hast {1}. <gray>Bereit in {2}."
+  refunded: "<gray>Das Portal wurde nicht benutzt: {0} Portalenergie zurück."
+  vehicle: "<red>Steig zuerst aus deinem Fahrzeug aus."
+  cooldown: "<red>Warte {0} s, bevor du das nächste Portal öffnest."
+  no-room: "<red>Kein Platz für ein Portal: Stell dich vor eine Wand oder vor einen freien Platz, 1 Block breit und 2 hoch."
+  opened-home: "<light_purple>Portal nach Hause ({0}) ist {1} s offen. Lauf hinein!"
+  opened-warp: "<light_purple>Portal zu Warp {0} ist {1} s offen. Lauf hinein – andere können folgen."
+  closing: "<light_purple>Portal schließt in {0} s"
