@@ -84,7 +84,7 @@ final class NativeNetherViews implements Listener, AutoCloseable {
             World.Environment type = origin.getEnvironment() == World.Environment.NETHER ? World.Environment.NORMAL : World.Environment.NETHER;
             if (origin.getEnvironment() == World.Environment.THE_END) return;
             World target = NativeWorlds.destination(origin, type, plugin.getServer().getWorlds(),
-                    plugin.getConfig().getString("world-links." + origin.getUID() + "." + (type == World.Environment.NETHER ? "nether" : "overworld")));
+                    !PortalSwitches.on(plugin.getConfig(), PortalSwitches.WORLD_LINKS) ? null : plugin.getConfig().getString("world-links." + origin.getUID() + "." + (type == World.Environment.NETHER ? "nether" : "overworld")));
             if (target == null) { retry(request.surface.frame()); return; }
             Point3 p = request.surface.frame().origin();
             try {

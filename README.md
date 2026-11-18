@@ -30,7 +30,21 @@ These are explicit temporary direct legs between accessible portals; they do not
 
 ## Installation and existing features
 
-Install Vystorm Core **0.64.0+**, then `VystormPortals-1.15.0.jar` in `plugins/` and restart. Java 21 bytecode is used; run the Java version required by your Minecraft server. Supported API paths include Paper/Purpur 1.20.6 onward and Spigot/CraftBukkit 26.2/26.3. Folia is unsupported.
+Install Vystorm Core **0.65.0+**, then `VystormPortals-<version>.jar` (for this release `VystormPortals-1.24.0.jar`) in `plugins/` and restart. Java 21 bytecode is used; run the Java version required by your Minecraft server. The build compiles against Paper 26.2 and, in its compatibility checks, against Paper 1.20.6; Spigot and CraftBukkit 26.3 were last started with 1.14.0 and Core 0.51.0 (`release/spigot-compatibility-2026-11-07/VALIDATION.md`); 26.2 is named but not recorded there. Folia is unsupported.
+
+## Feature switches (1.24.0)
+
+Every feature has its own on/off switch in `config.yml`, listed with a one-line description in all seven languages in `/vadmin features`. A change applies at once: the plugin now has a reload hook, and the portal views and gates read their switches every tick and close when one is off. Only `travel-gates.short-commands` and `tutorial.enabled` need a restart. Core adds new switches to an existing `config.yml` with their comments; a missing switch counts as on.
+
+- New in 1.24.0: `manual-portals.enabled` (master switch for your own portals: views, travel, entity travel, styles, the `/vportal` portal commands and the portal menu), `trips.enabled`, `designer.enabled` (particles, ambient sound, arrival effect and the Style page), `maintenance.enabled` (`/vportal pause` and `resume`; off ignores the pause flags), `travel-gates.homes.enabled`, `travel-gates.warps.enabled`, `import.enabled` (HuskHomes), `use-world-links`, `tutorial.enabled`.
+- Already there: `end-portals.enabled`, `nether-portals.enabled`, `entity-travel.enabled`, `menu.enabled`, `trust.enabled`, `opening-hours.enabled`, `travel-gates.enabled`, `travel-gates.energy.enabled`, and the declared `instant-travel`, `end-portals.gateways`, `end-portals.return-view`, `entity-travel.objects|projectiles|mobs|vehicles`, `trust.player-menu`, `travel-gates.short-commands`, `travel-gates.warps.take-others-along`.
+- Older keys that now also show in `/vadmin features`: `nether-portals.prepare-counterpart`, `end-portals.prepare-arrival-platform`, `end-portals.generate-destination-chunks`, `travel-gates.warps.permission-per-warp`.
+
+A command of a switched-off feature answers "This feature is switched off on this server."; it disappears from tab completion and help at once (also `/home` and `/warp` with their switch) and comes back when the switch is on again. Saved portals, trips, styles, hours, homes, warps and energy stay.
+
+## Placeholders (1.24.0)
+
+With Vystorm Core 0.65.0 the plugin registers the namespace `portals`: `energy`, `energy_max`, `energy_percent`, `energy_full_in`, `energy_enabled`, `homes_count`, `homes_max`, `warps_count`, `portals_owned`, `portals_total`, `portal_open` (with a portal name as argument). Each works as `%vystorm_portals_<key>%` (also through PlaceholderAPI) and as `{portals:<key>}` in Vystorm texts; `/vadmin placeholders portals` lists them. Examples: `%vystorm_portals_energy%` and `%vystorm_portals_portal_open_market%`. A value of a switched-off feature is empty. `portals_total` also answers off the server thread; the others answer on the server thread.
 
 Use `/vportal help` for portal creation, linking, trust, preview, menu and maintenance commands. Settings live in `config.yml`; portal definitions in `portals.yml`. Localized text is supplied in English, German, French, Italian, Brazilian Portuguese, Russian and Simplified Chinese. Core provides language selection, command aliases and safe fallback dialogs.
 

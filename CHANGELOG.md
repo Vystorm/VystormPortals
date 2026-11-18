@@ -1,3 +1,16 @@
+## 1.24.0 — 2026-11-18
+
+- Requires Vystorm Core 0.65.0. Update Core before you update this plugin.
+- Switches now apply at once: a change in `/vadmin features` or `/vadmin config` is applied without a restart. Open portal views close by themselves when their switch goes off. Only `travel-gates.short-commands` and `tutorial.enabled` still need a restart.
+- Every feature can now be switched on and off, with a one-line description in all seven languages in `/vadmin features`. Core adds the new switches to your existing `config.yml` with their comments; a missing switch counts as on, so nothing changes until you switch something off.
+- New master switch `manual-portals.enabled` for your own portals: views, travel, entity travel, styles, the `/vportal` portal commands and the portal menu. Saved portals stay when it is off.
+- New switches: `trips.enabled`, `designer.enabled` (particles, ambient sound, arrival effect and the Style page), `maintenance.enabled` (off ignores the pause flags), `travel-gates.homes.enabled` and `travel-gates.warps.enabled` (homes and warps can now be switched apart), `import.enabled` (HuskHomes), `use-world-links`, `tutorial.enabled`.
+- Older keys that now also show in `/vadmin features`: `nether-portals.prepare-counterpart`, `end-portals.prepare-arrival-platform`, `end-portals.generate-destination-chunks`, `travel-gates.warps.permission-per-warp`.
+- A command of a switched-off feature answers "This feature is switched off on this server." It is also gone from tab completion and help while the switch is off, and so are the short commands `/home`, `/warp` and the others while homes or warps are off. The portal menu entry, the Style page and the portal access entry in the player menu disappear while their switch is off.
+- Placeholders: the plugin registers the namespace `portals` with 11 values (portal energy, homes, warps, own portals, whether a portal is open). Examples: `%vystorm_portals_energy%` and `%vystorm_portals_portal_open_market%`. They work in Vystorm texts and, through PlaceholderAPI, in other plugins. A value of a switched-off feature is empty.
+- Tab completion and help follow a switch at once, without registering the command again.
+- README: the install line names the right jar, and the compatibility line says what the build and the recorded Spigot check prove.
+
 ## 1.23.0 — 2026-11-17
 
 - Requires Vystorm Core 0.64.0 or newer. Update Core before you update this plugin.

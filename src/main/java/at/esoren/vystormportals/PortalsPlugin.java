@@ -55,33 +55,35 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     /** The Core hub for the classes of this plugin (they get the plugin in their constructor). */
     Vystorm.vystorm_core.API core() { return core; }
     @Override public void onEnable() {
-        if (!CoreApi.atLeast("0.64.0")) {
-            getLogger().severe("Vystorm Core 0.64.0 or newer required");
+        if (!CoreApi.atLeast("0.65.0")) {
+            getLogger().severe("Vystorm Core 0.65.0 or newer required");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         core = CoreApi.api().orElseThrow();
         core.admin().updates().spigot(this, 139879);
-        try {
-            for (String feature : List.of("instant-travel", "end-portals.gateways", "end-portals.return-view",
-                "entity-travel.objects", "entity-travel.projectiles", "entity-travel.mobs", "entity-travel.vehicles", "trust.player-menu",
-                "travel-gates.short-commands", "travel-gates.warps.take-others-along"))
-                core.settings().config().feature(this, feature);
-        } catch (RuntimeException featureSwitchesUnavailable) { }
         saveDefaultConfig();
-        try {
-            core.settings().config().registerAll(this, null, false);
-            for (String key : getConfig().getKeys(false)) core.settings().config().activation(this, key, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
-        } catch (RuntimeException configMenuUnavailable) {
-            getLogger().fine("Config menu unavailable: " + configMenuUnavailable);
-        }
         try {
             lang = core.lang().register(this);
         } catch (RuntimeException unavailable) {
             lang = null;
         }
         try {
-            core.registerTutorial(this);
+            // 1.24.0: a reload hook applies changes at once (views read their switches every tick and close when one is
+            // off); Core merges new keys into an existing config.yml. Only the short commands and the tutorial need a restart.
+            var config = core.settings().config();
+            config.registerAll(this, this::reloadSettings);
+            for (String path : PortalSwitches.all()) {
+                String description = lang == null ? null : lang.ref(PortalSwitches.descriptionKey(path));
+                if (PortalSwitches.DECLARED.contains(path)) config.feature(this, path, null, description);
+                else if (description != null) config.label(this, path, null, description);
+            }
+            for (String key : PortalSwitches.RESTART) config.activation(this, key, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
+        } catch (RuntimeException configMenuUnavailable) {
+            getLogger().fine("Config menu unavailable: " + configMenuUnavailable);
+        }
+        try {
+            if (PortalSwitches.on(getConfig(), PortalSwitches.TUTORIAL)) core.registerTutorial(this);
         } catch (RuntimeException noTutorial) {
             getLogger().fine("Tutorial not registered: " + noTutorial);
         }
@@ -113,6 +115,11 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(destinationChunks, this);
         gates = new TravelGates(this, destinationChunks, System::currentTimeMillis);
         try {
+            PortalsPlaceholders.register(core.placeholders(), this, lang, placeholderSource());
+        } catch (RuntimeException unavailable) {
+            getLogger().warning("Placeholders not registered: " + unavailable);
+        }
+        try {
             trips = new PortalTrips(this, destinationChunks);
             getServer().getPluginManager().registerEvents(trips, this);
             trips.handleSharedEvents(core.priority().stages());
@@ -123,23 +130,20 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         netherViews = new NativeNetherViews(this, core, destinationChunks);
         gatewayViews = new NativeGatewayViews(this, core, destinationChunks);
         getServer().getPluginManager().registerEvents(netherViews, this);
-        if (getConfig().getBoolean("instant-travel", true)) {
-            instantTravel = new InstantPortalTravel();
-            getServer().getWorlds().forEach(instantTravel::apply);
-            getServer().getPluginManager().registerEvents(instantTravel, this);
-        }
+        applyInstantTravel();
         entityTravel = new EntityTravel(this, EntityTravel.Options.read(getConfig()));
         tasks = core.tasks().of(this, "portal-visuals");
         tasks.timer(1, 1, this::update);
         trust = Trust.read(getConfig());
-        if (getConfig().getBoolean("menu.enabled", true) && lang != null) {
+        // the menu object always exists so menu.enabled can be switched at runtime; access checks the switch
+        if (lang != null) {
             menu = new PortalMenu(this, lang);
         }
         if (lang != null) {
             try {
-                PortalPanels created = new PortalPanels(this, lang, menu == null ? new PortalMenu(this, lang) : menu);
+                PortalPanels created = new PortalPanels(this, lang, menu);
                 try {
-                    created.register(menu != null);
+                    created.register(true);
                     panelMenus = created;
                 } catch (RuntimeException failure) {
                     created.close();
@@ -152,13 +156,14 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         if (menu != null && panelMenus == null) {
             try {
                 core.gui().registerMenu(this, "portals", lang.ref("menu.entry"), Material.ENDER_EYE,
-                    p -> p.hasPermission("vystormportals.menu") && p.hasPermission("vystormportals.use"), this::openMenu,
+                    p -> PortalSwitches.menu(getConfig()) && p.hasPermission("vystormportals.menu") && p.hasPermission("vystormportals.use"), this::openMenu,
                     Vystorm.vystorm_core._uiMethods.menu.MenuCategory.WORLD.group(), lang.ref("menu.entry-desc"));
                 } catch (RuntimeException unavailable) {
                 getLogger().info("Core main menu unavailable; /vportal menu still works");
             }
         }
-        if (trust.enabled() && trust.playerMenu() && lang != null) {
+        // always registered; the entry is only shown while trust.enabled, trust.player-menu and manual portals are on
+        if (lang != null) {
             try {
                 TrustMenuEntries.register(this, lang);
             } catch (RuntimeException failure) {
@@ -189,8 +194,71 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         corrections.clear();
         cooldown.clear();
     }
+    /**
+     * The reload hook (1.24.0): reads config.yml again and applies every switch at once. Views and gates read their
+     * switches every tick and close when one is off, so open views are safe; instant travel restores or sets the
+     * gamerules; entity travel starts fresh. Only travel-gates.short-commands and tutorial.enabled need a restart.
+     */
+    void reloadSettings() {
+        List<Boolean> listed = listing();
+        reloadConfig();
+        // tab completion asks the switches live; a changed switch only needs the players' command lists sent again
+        if (core != null && !listed.equals(listing())) core.command().refresh();
+        trust = Trust.read(getConfig());
+        applyInstantTravel();
+        if (entityTravel != null) entityTravel.close();
+        entityTravel = new EntityTravel(this, EntityTravel.Options.read(getConfig()));
+        if (gates != null) gates.reload();
+        if (!PortalSwitches.on(getConfig(), PortalSwitches.MANUAL)) {
+            pending.clear();
+            for (UUID id : List.copyOf(views.keySet())) stopView(id);
+        }
+    }
+    /** instant-travel: sets the native dwell time to zero while on, restores the gamerules when it goes off. */
+    private void applyInstantTravel() {
+        boolean wanted = getConfig().getBoolean("instant-travel", true);
+        if (wanted && instantTravel == null) {
+            instantTravel = new InstantPortalTravel();
+            getServer().getWorlds().forEach(instantTravel::apply);
+            getServer().getPluginManager().registerEvents(instantTravel, this);
+        } else if (!wanted && instantTravel != null) {
+            org.bukkit.event.HandlerList.unregisterAll(instantTravel);
+            instantTravel.close();
+            instantTravel = null;
+        }
+    }
+    boolean manualOn() { return PortalSwitches.manual(getConfig()); }
+    /** What the portals placeholders read, looked up at call time (gates is null while the plugin is off). */
+    PortalsPlaceholders.Source placeholderSource() {
+        return new PortalsPlaceholders.Source() {
+            public boolean gatesOn() { return gates != null && gates.enabled(); }
+            public boolean energyOn() { return gates != null && gates.energyRules().enabled(); }
+            public boolean homesOn() { return PortalSwitches.on(getConfig(), PortalSwitches.HOMES); }
+            public boolean warpsOn() { return PortalSwitches.on(getConfig(), PortalSwitches.WARPS); }
+            public boolean manualOn() { return PortalSwitches.manual(getConfig()); }
+            public double energy(UUID player) { return gates.energyNow(player); }
+            public double energyMax() { return gates.energyRules().max(); }
+            public long secondsUntilFull(UUID player) {
+                var rules = gates.energyRules();
+                return rules.secondsUntil(gates.energyNow(player), rules.max());
+            }
+            public int homes(UUID player) { return gates.points().homes(player).size(); }
+            public int maxHomes(Player player) { return gates.maxHomes(player); }
+            public int warps() { return gates.points().warps().size(); }
+            public Map<String, Portal> portals() { return portals; }
+            public boolean open(Portal portal) { return (!PortalSwitches.maintenance(getConfig()) || !portal.paused()) && hoursOpen(portal); }
+        };
+    }
+    /** The portal menu lists and edits manual portals, so it needs menu.enabled and manual-portals.enabled. */
+    boolean menuOn() { return PortalSwitches.menu(getConfig()); }
+    boolean designerOn() { return PortalSwitches.designer(getConfig()); }
+    boolean maintenanceOn() { return PortalSwitches.maintenance(getConfig()); }
+    /** Not paused (maintenance.enabled false ignores the pause flags) and both ends exist. */
+    boolean routeOpenNow(Portal portal, Portal destination) {
+        return PortalSwitches.maintenance(getConfig()) ? portal.routeOpen(destination) : destination != null;
+    }
     private void openMenu(Player player) {
-        if (menu == null || !isEnabled() || !getConfig().getBoolean("menu.enabled", true) || !player.hasPermission("vystormportals.menu") || !player.hasPermission("vystormportals.use")) return;
+        if (menu == null || !isEnabled() || !PortalSwitches.menu(getConfig()) || !player.hasPermission("vystormportals.menu") || !player.hasPermission("vystormportals.use")) return;
         if (panelMenus != null) {
             try {
                 if (panelMenus.open(player)) return;
@@ -247,7 +315,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     }
     /** Not paused and both ends inside their opening hours. */
     boolean routeOpen(Portal portal, Portal destination) {
-        return portal.routeOpen(destination) && hoursOpen(portal) && hoursOpen(destination);
+        return routeOpenNow(portal, destination) && hoursOpen(portal) && hoursOpen(destination);
     }
     /** "opens in 3 h 05 min" for a closed portal, or empty. */
     private String nextOpening(Portal portal) {
@@ -256,7 +324,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     }
     /** Action bar countdown for players within 6 blocks of a portal with opening hours, every second. */
     private void hoursBar() {
-        if (hours == null || !getConfig().getBoolean("opening-hours.enabled", true) || lang == null) return;
+        if (hours == null || !getConfig().getBoolean("opening-hours.enabled", true) || !PortalSwitches.manual(getConfig()) || lang == null) return;
         java.time.LocalDateTime now = localNow();
         for (Player player : getServer().getOnlinePlayers()) {
             Portal shown = null;
@@ -280,6 +348,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     }
     /** Style particles every half second and the ambient sound every four seconds, only where a player is within 32 blocks. */
     private void ambient() {
+        if (!PortalSwitches.designer(getConfig())) return;   // designer.enabled / manual-portals.enabled (1.24.0)
         for (Portal portal : portals.values()) {
             PortalStyles.Style style = styles.of(portal.id());
             if (style.plain()) continue;
@@ -332,7 +401,9 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
             }
         }
         netherViews.tick(tick);
-        if (entityTravel != null) try {
+        boolean manual = PortalSwitches.manual(getConfig());
+        if (!manual) pending.clear();
+        if (entityTravel != null && manual) try {
             entityTravel.tick(tick, portals.values());
         } catch (RuntimeException failure) {
             getLogger().warning("Entity travel failed: " + failure.getMessage());
@@ -345,7 +416,8 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
             Portal nearest = null;
             double best = 144;
             Point3 eye = point(player.getEyeLocation());
-            for (Portal portal : portals.values()) {
+            // manual-portals.enabled false (1.24.0): no manual portal is looked for, so its view closes below
+            if (manual) for (Portal portal : portals.values()) {
                 Portal destination = target(portal);
                 if (!routeOpen(portal, destination) || !portal.frame().world().equals(player.getWorld().getUID()) || !allowed(player, portal) || !allowed(player, destination)) continue;
                 double d = eye.distanceSquared(portal.frame().origin());
@@ -427,6 +499,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         if (trips != null && trips.active(player)) return;
         if (gates != null && !player.isInsideVehicle() && gates.enter(player, event.getTo())) return;
         if (player.isInsideVehicle() || !player.getPassengers().isEmpty() || tick < cooldown.getOrDefault(player.getUniqueId(), 0L) || pending.containsKey(player.getUniqueId())) return;
+        if (!PortalSwitches.manual(getConfig())) return;
         // Runs for every move of every player: cheap world and distance checks first (1.19.1).
         java.util.UUID worldId = player.getWorld().getUID();
         double tx = event.getTo().getX(), ty = event.getTo().getY(), tz = event.getTo().getZ();
@@ -443,7 +516,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
                 say(player, "denied");
                 return;
             }
-            if (!portal.routeOpen(destination)) {
+            if (!routeOpenNow(portal, destination)) {
                 event.setTo(event.getFrom());
                 say(player, "route-paused");
                 return;
@@ -468,7 +541,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     }
     private boolean travel(Player player, Passage passage) {
         Portal entrance = portals.get(passage.portal), destination = portals.get(passage.target);
-        if (entrance == null || !entrance.routeOpen(destination) || !Objects.equals(entrance.target(), destination.id()) || !allowed(player, entrance) || !allowed(player, destination)) return false;
+        if (entrance == null || !PortalSwitches.manual(getConfig()) || !routeOpenNow(entrance, destination) || !Objects.equals(entrance.target(), destination.id()) || !allowed(player, entrance) || !allowed(player, destination)) return false;
         World world = getServer().getWorld(destination.frame().world());
         if (world == null) {
             say(player, "unavailable");
@@ -496,7 +569,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         cooldown.put(player.getUniqueId(), tick + 40);
         player.setVelocity(new Vector(momentum.x(), momentum.y(), momentum.z()));
         player.setFallDistance(0);
-        if (styles != null) PortalStyles.arrival(location, styles.of(destination.id()), null);
+        if (styles != null && PortalSwitches.designer(getConfig())) PortalStyles.arrival(location, styles.of(destination.id()), null);
         return true;
     }
     static ViewFrame reverse(ViewFrame f) {
@@ -619,6 +692,11 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     private boolean execute(Player player, String[] args) {
         CommandSender sender = player;
         String action = args.length == 0 ? "list" : args[0].toLowerCase(Locale.ROOT);
+        String off = switchOf(action);
+        if (off != null) {
+            say(sender, PortalSwitches.OFF);
+            return true;
+        }
         try {
             if (action.equals("nearby")) {
                 if (args.length != 1) {
@@ -657,8 +735,8 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
                     say(sender, "usage");
                     return true;
                 }
-                if (menu == null) {
-                    say(sender, "menu-disabled");
+                if (menu == null || !PortalSwitches.menu(getConfig())) {
+                    say(sender, PortalSwitches.OFF);
                     return true;
                 }
                 if (!player.hasPermission("vystormportals.menu") || !player.hasPermission("vystormportals.use")) {
@@ -767,7 +845,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
                 }
                 case "trust", "untrust" -> {
                     if (!trust.enabled()) {
-                        say(sender, "trust-disabled");
+                        say(sender, PortalSwitches.OFF);
                         break;
                     }
                     if (args.length == 2 && action.equals("trust")) {
@@ -797,6 +875,16 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
             say(sender, "failed");
         }
         return true;
+    }
+    /**
+     * The switch a /vportal action needs that is off now, or null (1.24.0). Every action of manual portals needs
+     * manual-portals.enabled; pause and resume also need maintenance.enabled. The menu has its own check.
+     */
+    String switchOf(String action) {
+        if (Set.of("list", "nearby", "info", "create", "link", "unlink", "delete", "access", "warmup", "trust", "untrust", "rename", "pause", "resume").contains(action) && !PortalSwitches.manual(getConfig()))
+            return PortalSwitches.MANUAL;
+        if ((action.equals("pause") || action.equals("resume")) && !PortalSwitches.maintenance(getConfig())) return PortalSwitches.MAINTENANCE;
+        return null;
     }
     /** Links a and b both ways; former partners of either side lose their now one-way link back. */
     static Map<String, Portal> linked(Map<String, Portal> portals, String a, String b) {
@@ -965,50 +1053,81 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
      * in the language files ({@code /portale verbinden a b}, {@code /传送门 连接 a b}); English always works. Every node
      * hands the English ids to {@link #run}, so checks and messages are those of the menu and of earlier versions.
      */
+    /**
+     * Lists a subcommand (or a short gate command) in tab completion and help only while its feature is on (1.24.0).
+     * Core asks {@link #offNow} at every completion and the reload hook replaces the config, so a switch applies at
+     * once; the command still answers the off message. Without a plugin (tests) the node is unchanged.
+     */
+    private static CommandSpec.Builder hide(PortalsPlugin p, String sub, CommandSpec.Builder builder) {
+        return p == null ? builder : builder.visibleWhen(() -> !p.offNow(sub));
+    }
+    /** Every node whose listing follows a switch. */
+    static final List<String> SWITCHED = List.of("list", "nearby", "info", "create", "link", "unlink", "delete", "access",
+            "warmup", "trust", "untrust", "rename", "pause", "resume", "menu", "trip", "home", "sethome", "delhome", "homes",
+            "warp", "setwarp", "delwarp", "warps", "energy", "import");
+    /** What tab completion lists now; a reload that changes it sends the players their command lists again. */
+    List<Boolean> listing() {
+        return SWITCHED.stream().map(this::offNow).toList();
+    }
+    /** Whether a subcommand's feature is switched off NOW (read from the current config). */
+    boolean offNow(String sub) {
+        var c = getConfig();
+        if (switchOf(sub) != null) return true;
+        return switch (sub) {
+            case "menu" -> !PortalSwitches.menu(getConfig());
+            case "trip" -> !PortalSwitches.on(c, PortalSwitches.TRIPS) || !PortalSwitches.manual(getConfig());
+            case "home", "sethome", "delhome", "homes" -> !c.getBoolean("travel-gates.enabled", true) || !PortalSwitches.on(c, PortalSwitches.HOMES);
+            case "warp", "setwarp", "delwarp", "warps" -> !c.getBoolean("travel-gates.enabled", true) || !PortalSwitches.on(c, PortalSwitches.WARPS);
+            case "energy" -> !c.getBoolean("travel-gates.enabled", true) || !c.getBoolean("travel-gates.energy.enabled", false);
+            case "import" -> !PortalSwitches.on(c, PortalSwitches.IMPORT);
+            default -> false;
+        };
+    }
     static CommandSpec commandSpec(PortalsPlugin p) {
         return CommandSpec.command("vportal")
                 .aliases("portal", "portals")
                 .playerOnly()
                 .executes(ctx -> p.run(ctx.player()))
-                .sub("list", s -> s.playerOnly().executes(ctx -> p.run(ctx.player(), "list")))
-                .sub("nearby", s -> s.playerOnly().executes(ctx -> p.run(ctx.player(), "nearby")))
-                .sub("trip", s -> s.playerOnly().permission("vystormportals.use").arg(Arg.greedy("action").optional()
+                .sub("list", s -> hide(p, "list", s).playerOnly().executes(ctx -> p.run(ctx.player(), "list")))
+                .sub("nearby", s -> hide(p, "nearby", s).playerOnly().executes(ctx -> p.run(ctx.player(), "nearby")))
+                .sub("trip", s -> hide(p, "trip", s).playerOnly().permission("vystormportals.use").arg(Arg.greedy("action").optional()
                         .suggests((ctx, prefix) -> p.trips == null ? List.of() : p.trips.suggest(ctx.player(), Arrays.copyOfRange(ctx.rawArgs(), 1, ctx.rawArgs().length)))).executes(ctx -> {
-                    if (p.trips == null) ctx.reply("failed");
+                    if (!PortalSwitches.on(p.getConfig(), PortalSwitches.TRIPS) || !PortalSwitches.manual(p.getConfig())) p.say(ctx.player(), PortalSwitches.OFF);
+                    else if (p.trips == null) ctx.reply("failed");
                     else p.trips.command(ctx.player(), ctx.get("action"));
                 }))
-                .sub("menu", s -> s.playerOnly().executes(ctx -> p.run(ctx.player(), "menu")))
-                .sub("info", s -> s.playerOnly().arg(portal(p, "info")).executes(ctx -> p.run(ctx.player(), "info", ctx.get("name"))))
-                .sub("create", s -> s.playerOnly().arg(Arg.word("name"))
+                .sub("menu", s -> hide(p, "menu", s).playerOnly().executes(ctx -> p.run(ctx.player(), "menu")))
+                .sub("info", s -> hide(p, "info", s).playerOnly().arg(portal(p, "info")).executes(ctx -> p.run(ctx.player(), "info", ctx.get("name"))))
+                .sub("create", s -> hide(p, "create", s).playerOnly().arg(Arg.word("name"))
                         .arg(Arg.integer("width", 2, 8).optional()).arg(Arg.integer("height", 2, 8).optional())
                         .executes(ctx -> p.run(ctx.player(), args("create", ctx.get("name"), ctx.input("width"), ctx.input("height")))))
-                .sub("link", s -> s.playerOnly().arg(portal(p, "link"))
+                .sub("link", s -> hide(p, "link", s).playerOnly().arg(portal(p, "link"))
                         .arg(Arg.word("target").suggests((ctx, prefix) -> p.complete(ctx.player(), "link", ctx.input("name"), prefix)))
                         .executes(ctx -> p.run(ctx.player(), "link", ctx.get("name"), ctx.get("target"))))
-                .sub("unlink", s -> s.playerOnly().arg(portal(p, "unlink")).executes(ctx -> p.run(ctx.player(), "unlink", ctx.get("name"))))
-                .sub("delete", s -> s.playerOnly().arg(portal(p, "delete")).executes(ctx -> p.run(ctx.player(), "delete", ctx.get("name"))))
-                .sub("access", s -> s.playerOnly().arg(portal(p, "access")).arg(Arg.choice("access", "public", "private"))
+                .sub("unlink", s -> hide(p, "unlink", s).playerOnly().arg(portal(p, "unlink")).executes(ctx -> p.run(ctx.player(), "unlink", ctx.get("name"))))
+                .sub("delete", s -> hide(p, "delete", s).playerOnly().arg(portal(p, "delete")).executes(ctx -> p.run(ctx.player(), "delete", ctx.get("name"))))
+                .sub("access", s -> hide(p, "access", s).playerOnly().arg(portal(p, "access")).arg(Arg.choice("access", "public", "private"))
                         .executes(ctx -> p.run(ctx.player(), "access", ctx.get("name"), ctx.get("access"))))
-                .sub("warmup", s -> s.playerOnly().arg(portal(p, "warmup")).arg(Arg.integer("ticks"))
+                .sub("warmup", s -> hide(p, "warmup", s).playerOnly().arg(portal(p, "warmup")).arg(Arg.integer("ticks"))
                         .executes(ctx -> p.run(ctx.player(), "warmup", ctx.get("name"), ctx.input("ticks"))))
-                .sub("trust", s -> s.playerOnly().arg(portal(p, "trust")).arg(trustee(p, "trust").optional())
+                .sub("trust", s -> hide(p, "trust", s).playerOnly().arg(portal(p, "trust")).arg(trustee(p, "trust").optional())
                         .executes(ctx -> p.run(ctx.player(), args("trust", ctx.get("name"), ctx.get("player")))))
-                .sub("untrust", s -> s.playerOnly().arg(portal(p, "untrust")).arg(trustee(p, "untrust"))
+                .sub("untrust", s -> hide(p, "untrust", s).playerOnly().arg(portal(p, "untrust")).arg(trustee(p, "untrust"))
                         .executes(ctx -> p.run(ctx.player(), "untrust", ctx.get("name"), ctx.get("player"))))
-                .sub("rename", s -> s.playerOnly().arg(portal(p, "rename")).arg(Arg.word("newname"))
+                .sub("rename", s -> hide(p, "rename", s).playerOnly().arg(portal(p, "rename")).arg(Arg.word("newname"))
                         .executes(ctx -> p.run(ctx.player(), "rename", ctx.get("name"), ctx.get("newname"))))
-                .sub("pause", s -> s.playerOnly().arg(portal(p, "pause")).executes(ctx -> p.run(ctx.player(), "pause", ctx.get("name"))))
-                .sub("resume", s -> s.playerOnly().arg(portal(p, "resume")).executes(ctx -> p.run(ctx.player(), "resume", ctx.get("name"))))
-                .sub("home", s -> gateHome(p, s))
-                .sub("sethome", s -> gateSetHome(p, s))
-                .sub("delhome", s -> gateDelHome(p, s))
-                .sub("homes", s -> s.playerOnly().executes(ctx -> p.gates(g -> g.homes(ctx.player()), ctx.player())))
-                .sub("warp", s -> gateWarp(p, s))
-                .sub("setwarp", s -> gateSetWarp(p, s))
-                .sub("delwarp", s -> gateDelWarp(p, s))
-                .sub("warps", s -> s.playerOnly().executes(ctx -> p.gates(g -> g.warps(ctx.player()), ctx.player())))
-                .sub("energy", s -> s.playerOnly().executes(ctx -> p.gates(g -> g.energy(ctx.player()), ctx.player())))
-                .sub("import", s -> s.permission("vystormportals.admin").arg(Arg.choice("source", "huskhomes"))
+                .sub("pause", s -> hide(p, "pause", s).playerOnly().arg(portal(p, "pause")).executes(ctx -> p.run(ctx.player(), "pause", ctx.get("name"))))
+                .sub("resume", s -> hide(p, "resume", s).playerOnly().arg(portal(p, "resume")).executes(ctx -> p.run(ctx.player(), "resume", ctx.get("name"))))
+                .sub("home", s -> gateHome(p, hide(p, "home", s)))
+                .sub("sethome", s -> gateSetHome(p, hide(p, "sethome", s)))
+                .sub("delhome", s -> gateDelHome(p, hide(p, "delhome", s)))
+                .sub("homes", s -> hide(p, "homes", s).playerOnly().executes(ctx -> p.gates(g -> g.homes(ctx.player()), ctx.player())))
+                .sub("warp", s -> gateWarp(p, hide(p, "warp", s)))
+                .sub("setwarp", s -> gateSetWarp(p, hide(p, "setwarp", s)))
+                .sub("delwarp", s -> gateDelWarp(p, hide(p, "delwarp", s)))
+                .sub("warps", s -> hide(p, "warps", s).playerOnly().executes(ctx -> p.gates(g -> g.warps(ctx.player()), ctx.player())))
+                .sub("energy", s -> hide(p, "energy", s).playerOnly().executes(ctx -> p.gates(g -> g.energy(ctx.player()), ctx.player())))
+                .sub("import", s -> hide(p, "import", s).permission("vystormportals.admin").arg(Arg.choice("source", "huskhomes"))
                         .executes(ctx -> p.importHuskHomes(ctx.sender())))
                 .build();
     }
@@ -1017,6 +1136,10 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
      * homes and warps into travel.yml. Existing homes and warps are kept. The database is read off the server thread.
      */
     void importHuskHomes(CommandSender sender) {
+        if (!PortalSwitches.on(getConfig(), PortalSwitches.IMPORT)) {
+            say(sender, PortalSwitches.OFF);
+            return;
+        }
         if (gates == null) {
             say(sender, "gate.disabled");
             return;
@@ -1055,7 +1178,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     }
     /** Runs a travel gate action, or says that travel gates are off. */
     void gates(java.util.function.Consumer<TravelGates> action, Player player) {
-        if (gates == null) say(player, "gate.disabled");
+        if (gates == null || !gates.enabled()) say(player, PortalSwitches.OFF);
         else action.accept(gates);
     }
     private static Arg<String> homeName(PortalsPlugin p) {
@@ -1085,14 +1208,14 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     /** Short root commands /home, /sethome, /delhome, /homes, /warp, /setwarp, /delwarp, /warps (travel-gates.short-commands). */
     static List<CommandSpec> gateCommands(PortalsPlugin p) {
         return List.of(
-                gateHome(p, CommandSpec.command("home")).build(),
-                gateSetHome(p, CommandSpec.command("sethome")).build(),
-                gateDelHome(p, CommandSpec.command("delhome")).build(),
-                CommandSpec.command("homes").playerOnly().executes(ctx -> p.gates(g -> g.homes(ctx.player()), ctx.player())).build(),
-                gateWarp(p, CommandSpec.command("warp")).build(),
-                gateSetWarp(p, CommandSpec.command("setwarp")).build(),
-                gateDelWarp(p, CommandSpec.command("delwarp")).build(),
-                CommandSpec.command("warps").playerOnly().executes(ctx -> p.gates(g -> g.warps(ctx.player()), ctx.player())).build());
+                gateHome(p, hide(p, "home", CommandSpec.command("home"))).build(),
+                gateSetHome(p, hide(p, "sethome", CommandSpec.command("sethome"))).build(),
+                gateDelHome(p, hide(p, "delhome", CommandSpec.command("delhome"))).build(),
+                hide(p, "homes", CommandSpec.command("homes")).playerOnly().executes(ctx -> p.gates(g -> g.homes(ctx.player()), ctx.player())).build(),
+                gateWarp(p, hide(p, "warp", CommandSpec.command("warp"))).build(),
+                gateSetWarp(p, hide(p, "setwarp", CommandSpec.command("setwarp"))).build(),
+                gateDelWarp(p, hide(p, "delwarp", CommandSpec.command("delwarp"))).build(),
+                hide(p, "warps", CommandSpec.command("warps")).playerOnly().executes(ctx -> p.gates(g -> g.warps(ctx.player()), ctx.player())).build());
     }
     private static Arg<String> portal(PortalsPlugin p, String action) {
         return Arg.word("name").suggests((ctx, prefix) -> p.complete(ctx.player(), action, prefix));

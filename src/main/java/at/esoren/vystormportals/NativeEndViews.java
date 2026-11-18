@@ -88,7 +88,7 @@ final class NativeEndViews implements AutoCloseable {
     }
     private World dimension(World source, World.Environment environment, String key) {
         return NativeWorlds.destination(source, environment, plugin.getServer().getWorlds(),
-                plugin.getConfig().getString("world-links." + source.getUID() + "." + key));
+                !PortalSwitches.on(plugin.getConfig(), PortalSwitches.WORLD_LINKS) ? null : plugin.getConfig().getString("world-links." + source.getUID() + "." + key));
     }
     private static Point3 point(Location location) {
         return new Point3(location.getX(), location.getY(), location.getZ());

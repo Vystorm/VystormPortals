@@ -65,7 +65,16 @@ final class TravelGates {
     }
 
     boolean enabled() { return settings.enabled(); }
+
+    /** The reload hook (1.24.0): new settings and energy rules; open gates finish their lifetime. */
+    void reload() {
+        settings = Settings.read(plugin.getConfig());
+        energy.rules(PortalEnergy.Rules.read(plugin.getConfig()));
+    }
     TravelPoints points() { return points; }
+    PortalEnergy.Rules energyRules() { return energy.rules(); }
+    /** Current portal energy of a player (recharge computed on the fly). Server thread. */
+    double energyNow(UUID player) { return energy.current(player, clock.getAsLong()); }
     Collection<Gate> gates() { return Collections.unmodifiableCollection(gates.values()); }
 
     /** Homes a player may have: the highest vystormportals.homes.N permission (1..100), else travel-gates.homes.max. */
@@ -153,7 +162,7 @@ final class TravelGates {
 
     void energy(Player player) {
         PortalEnergy.Rules rules = energy.rules();
-        if (!rules.enabled()) { plugin.say(player, "gate.energy-off"); return; }
+        if (!rules.enabled() || !settings.enabled()) { plugin.say(player, PortalSwitches.OFF); return; }
         double value = energy.current(player.getUniqueId(), clock.getAsLong());
         long full = rules.secondsUntil(value, rules.max());
         plugin.say(player, "gate.energy", (long) Math.floor(value), (long) rules.max(), time(full));
@@ -163,7 +172,9 @@ final class TravelGates {
     List<String> warpNames(Player player) { return points.warps().keySet().stream().filter(w -> mayUseWarp(player, w)).toList(); }
 
     private boolean check(Player player, String permission) {
-        if (!settings.enabled()) { plugin.say(player, "gate.disabled"); return false; }
+        // travel-gates.homes.enabled / travel-gates.warps.enabled (1.24.0): homes and warps can be switched apart
+        String part = permission.startsWith("vystormportals.home") ? PortalSwitches.HOMES : PortalSwitches.WARPS;
+        if (!settings.enabled() || !PortalSwitches.on(plugin.getConfig(), part)) { plugin.say(player, PortalSwitches.OFF); return false; }
         if (!player.hasPermission(permission)) { plugin.say(player, "denied"); return false; }
         return true;
     }

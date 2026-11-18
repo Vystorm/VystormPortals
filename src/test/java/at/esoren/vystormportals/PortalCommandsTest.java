@@ -125,6 +125,7 @@ class PortalCommandsTest {
         doAnswer(i -> { chat.add(PlainTextComponentSerializer.plainText().serialize((Component) i.getArgument(0))); return null; })
                 .when(console).sendMessage(any(Component.class));
         CommandRegistration r = registration(plugin);
+        clearInvocations(plugin); // building the tree asks which subcommands are switched off (1.24.0)
         r.execute(console, "vportal", new String[]{"list"});
         r.execute(console, "vportal", new String[0]);
         assertEquals(List.of("Only players can do that.", "Only players can do that."), chat);

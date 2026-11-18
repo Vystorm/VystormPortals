@@ -27,7 +27,7 @@ final class TrustMenuEntries {
         return own(portals,viewer).stream().filter(p->p.trusted().contains(target)).count();
     }
     static boolean visible(PortalsPlugin plugin,Player viewer,Player target) {
-        return plugin.trust().enabled() && !viewer.equals(target) && viewer.hasPermission("vystormportals.use")
+        return plugin.trust().enabled() && plugin.trust().playerMenu() && PortalSwitches.manual(plugin.getConfig()) && !viewer.equals(target) && viewer.hasPermission("vystormportals.use")
                 && (viewer.hasPermission("vystormportals.create") || viewer.hasPermission("vystormportals.admin"))
                 && !own(plugin.portals().values(),viewer.getUniqueId()).isEmpty();
     }

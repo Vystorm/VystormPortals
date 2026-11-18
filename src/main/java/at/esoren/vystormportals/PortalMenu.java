@@ -106,8 +106,10 @@ final class PortalMenu {
                 inventory.setItem(9,MenuItems.item(plugin.core().compat().platform(),lang,player,Material.DAYLIGHT_DETECTOR,"hours.menu","hours.menu-lore","hours",summary));
                 actions.put(9,c->hours(player,id));
             }
-            inventory.setItem(17,MenuItems.item(plugin.core().compat().platform(),lang,player,Material.FIREWORK_STAR,"menu.style","menu.style-lore"));
-            actions.put(17,c->style(player,id));
+            if(PortalSwitches.designer(plugin.getConfig())) {   // designer.enabled (1.24.0): no style button while it is off
+                inventory.setItem(17,MenuItems.item(plugin.core().compat().platform(),lang,player,Material.FIREWORK_STAR,"menu.style","menu.style-lore"));
+                actions.put(17,c->style(player,id));
+            }
             inventory.setItem(16,MenuItems.item(plugin.core().compat().platform(),lang,player,Material.LAVA_BUCKET,"menu.delete","menu.delete-lore"));
             actions.put(16,c->{
                 if(!c.isShiftClick()) {lang.send(player,"menu.delete-hint","name",id);return;}
@@ -120,7 +122,7 @@ final class PortalMenu {
     /** Style page: left click = next choice, right click = previous; every change is saved at once. */
     private void style(Player player,String id) {
         Portal portal=plugin.portals().get(id);
-        if(portal==null || !plugin.canEdit(player,portal) || plugin.styles()==null) {overview(player,0);return;}
+        if(portal==null || !plugin.canEdit(player,portal) || plugin.styles()==null || !PortalSwitches.designer(plugin.getConfig())) {overview(player,0);return;}
         PortalStyles.Style s=plugin.styles().of(id);
         Map<Integer,Consumer<ClickType>> actions=new HashMap<>();
         Inventory inventory=inventory(player,27,lang.text(player,"style.title","name",id),actions);
@@ -182,7 +184,7 @@ final class PortalMenu {
 
     private void setStyle(Player player,String id,PortalStyles.Style style) {
         Portal portal=plugin.portals().get(id);
-        if(portal==null || !plugin.canEdit(player,portal)) {overview(player,0);return;}
+        if(portal==null || !plugin.canEdit(player,portal) || !PortalSwitches.designer(plugin.getConfig())) {overview(player,0);return;}
         try { plugin.styles().set(id,style); }
         catch(java.io.IOException failure) { lang.send(player,"style.save-failed"); plugin.getLogger().warning("styles.yml not saved: "+failure); }
         style(player,id);

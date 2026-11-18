@@ -1,3 +1,12 @@
+# Every switch below applies at once when it is changed in /vadmin features or /vadmin config (1.24.0). Only
+# travel-gates.short-commands and tutorial.enabled need a server restart.
+
+# Manual portals (1.24.0): portals made with /vportal create, the view through them, travel, entity travel and the
+# /vportal portal commands. false: none of this runs, the commands answer "This feature is switched off on this
+# server." and the portal menu is gone; portals.yml, styles and hours are kept.
+manual-portals:
+  enabled: true
+
 # Skip manual warmups and set native Nether survival/creative dwell time to zero.
 # Applies to all loaded worlds; previous gamerules are restored on normal disable.
 # World changes may still show Minecraft's loading screen.
@@ -27,11 +36,13 @@ nether-portals:
 #     end: world_the_end
 #     overworld: world
 world-links: {}
+# Use the world-links above (1.24.0). false: native portal views use the vanilla world pairs; the links stay saved.
+use-world-links: true
 
 # Items, XP orbs, TNT, falling blocks, arrows/snowballs/ender pearls, mobs and empty minecarts/boats
 # fly through PUBLIC manual portals (both ends public) and keep their momentum. Players are unaffected.
 # Destinations must be loaded (they are while someone looks through the portal); otherwise the entity just passes the frame.
-# Ender dragon, wither and fishing hooks never travel. Changes need a restart.
+# Ender dragon, wither and fishing hooks never travel. Needs manual-portals.enabled.
 entity-travel:
   enabled: true
   objects: true
@@ -52,6 +63,29 @@ trust:
   enabled: true
   max-per-portal: 16
   player-menu: true
+
+# Multi-stop trips over 2 to 8 portals (/vportal trip, 1.24.0 switch). false: the trip commands answer that the
+# feature is off and no new trip starts; saved trips stay. Needs manual-portals.enabled.
+trips:
+  enabled: true
+
+# Portal designer (1.24.0 switch): frame particles, ambient sound and arrival effect per portal, and the Style page
+# of the portal menu. false: no particles, sounds or arrival effects and no Style page; styles.yml is kept.
+designer:
+  enabled: true
+
+# Maintenance mode per portal (/vportal pause and resume, 1.24.0 switch). false: pause flags are ignored (every linked
+# portal is open) and pause/resume answer that the feature is off; the flags stay saved.
+maintenance:
+  enabled: true
+
+# Import of homes and warps from HuskHomes (/vportal import huskhomes, 1.24.0 switch).
+import:
+  enabled: true
+
+# Portals tutorial in the Vystorm Core main menu (1.24.0). A change needs a server restart.
+tutorial:
+  enabled: true
 
 # Timed portals: owners set opening hours per portal in the portal menu (days of the week and a daily time window,
 # also past midnight). Outside them the portal refuses travel and tells the next opening time; players near a timed
@@ -74,9 +108,15 @@ travel-gates:
   # Seconds between two gates of one player (vystormportals.energy.bypass skips it).
   cooldown-seconds: 3
   homes:
+    # Home gates (/home, /sethome, /delhome, /homes, 1.24.0 switch). false: they answer that the feature is off;
+    # saved homes stay.
+    enabled: true
     # Homes per player; permission vystormportals.homes.N (1..100) allows more.
     max: 3
   warps:
+    # Warp gates (/warp, /warps, /setwarp, /delwarp, 1.24.0 switch). false: they answer that the feature is off;
+    # saved warps stay.
+    enabled: true
     take-others-along: true
     # true = every warp needs vystormportals.warp.NAME (or vystormportals.warp.*).
     permission-per-warp: false

@@ -47,7 +47,7 @@ final class PortalPanels implements PortalPanel.Actions, TrustPanel.Actions {
     private PortalPanel.Text text(Player player) { return (key, args) -> lang.plain(player, key, args); }
     private Result denied(Player player) { return Result.error(lang.plain(player, "denied")); }
     boolean access(Player player) {
-        return plugin.isEnabled() && player.isOnline() && plugin.getConfig().getBoolean("menu.enabled", true)
+        return plugin.isEnabled() && player.isOnline() && PortalSwitches.menu(plugin.getConfig())
                 && player.hasPermission("vystormportals.use") && player.hasPermission("vystormportals.menu");
     }
     private List<Portal> visible(Player p) { return PortalMenu.ordered(plugin.portals().values(), p.getUniqueId(), portal -> plugin.allowed(p, portal)); }
@@ -58,7 +58,7 @@ final class PortalPanels implements PortalPanel.Actions, TrustPanel.Actions {
         var world = plugin.getServer().getWorld(portal.frame().world());
         return new PortalPanel.Row(portal, world == null ? portal.frame().world().toString() : world.getName(),
                 plugin.playerName(portal.owner()), plugin.canEdit(player, portal),
-                plugin.styles() == null ? null : plugin.styles().of(portal.id()),
+                plugin.styles() == null || !PortalSwitches.designer(plugin.getConfig()) ? null : plugin.styles().of(portal.id()),
                 plugin.hours() == null ? null : plugin.hours().of(portal.id()).orElse(null));
     }
     PortalPanel.Overview overview(Player player) {
@@ -119,6 +119,7 @@ final class PortalPanels implements PortalPanel.Actions, TrustPanel.Actions {
                     var s = plugin.styles().of(id); String choice = value.toString();
                     List<String> choices = setting.equals("particle") ? PortalStyles.PARTICLES : setting.equals("sound") ? PortalStyles.SOUNDS : PortalStyles.ARRIVALS;
                     if (!choices.contains(choice)) return denied(player);
+                    if (!PortalSwitches.designer(plugin.getConfig())) return Result.error(lang.plain(player, PortalSwitches.OFF));
                     plugin.styles().set(id, new PortalStyles.Style(setting.equals("particle") ? choice : s.particle(),
                             setting.equals("sound") ? choice : s.sound(), setting.equals("arrival") ? choice : s.arrival()));
                 }
