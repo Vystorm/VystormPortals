@@ -24,9 +24,11 @@ final class TrustPanel {
         Ui.Box detail = Ui.col().grow(3);
         if (o.selected() != null) {
             Row r = o.selected();
-            detail.children(Ui.heading(r.id()), Ui.text(t.get("panel.trust-help", "player", o.target())),
-                    Ui.toggle("trusted", t.get("trust-menu.entry", "player", o.target())).value(r.trusted())
-                            .onChange((a, value) -> PortalPanel.refresh(a, actions.trust(a.player(), r.id(), value))));
+            // 1.25.0: the one setting is a list row on Vystorm Screens (Core 0.66.0), its help text the description.
+            detail.children(Ui.heading(r.id()), Ui.section(t.get("panel.trust-title")).list().id("trust-settings").child(
+                    Ui.toggle("trusted", t.get("trust-menu.entry", "player", o.target())).description(t.get("panel.trust-help", "player", o.target()))
+                            .value(r.trusted())
+                            .onChange((a, value) -> PortalPanel.refresh(a, actions.trust(a.player(), r.id(), value)))));
         }
         Panel panel = Panel.page(t.get("trust-menu.title", "player", o.target()))
                 .subtitle(t.get("menu.title", "page", o.page() + 1, "pages", o.pages()))

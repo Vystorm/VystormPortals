@@ -43,6 +43,21 @@ class PortalPanelTest {
         String text = doc.toString();
         for (String value : List.of("Overworld", "Alex", "market", "White sparks", "Bell echo", "Opens at 08:00", "Closes at 22:00")) assertTrue(text.contains(value), text);
     }
+    @Test void givenEditablePortal_whenRendered_thenSettingsStyleAndHoursAreListsWithNamesAndDescriptions() throws Exception {
+        for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn")) {
+            JsonObject doc = render(row(true, PortalHours.Schedule.DEFAULT), code);
+            for (String section : List.of("settings", "style-settings", "hours-settings"))
+                assertEquals("list", PanelTesting.find(doc, section).get("layout").getAsString(), code + " " + section);
+            for (String toggle : List.of("public", "paused", "always", "day-0", "day-6"))
+                assertFalse(PanelTesting.plain(PanelTesting.find(doc, toggle).get("description")).isBlank(), code + " " + toggle);
+            for (String control : List.of("warmup", "particle", "sound", "arrival", "time-open"))
+                assertFalse(PanelTesting.find(doc, control).get("tooltip").toString().isBlank(), code + " " + control);
+            assertFalse(doc.toString().contains("panel.setting"), code + " unresolved key");
+        }
+        JsonObject en = render(row(true, PortalHours.Schedule.DEFAULT), "en");
+        assertEquals("Warmup in ticks", PanelTesting.plain(PanelTesting.find(en, "warmup").get("label")));
+        assertEquals("Monday", PanelTesting.plain(PanelTesting.find(en, "day-0").get("label")));
+    }
     @Test void givenVisitor_whenRendered_thenOnlyDetailsAndLocateAreAvailable() throws Exception {
         var ids = PanelTesting.ids(render(row(false, null), "en"));
         assertTrue(ids.containsAll(List.of("portals", "details", "locate", "close")));

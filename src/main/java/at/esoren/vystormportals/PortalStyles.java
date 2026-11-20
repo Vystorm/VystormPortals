@@ -73,7 +73,7 @@ final class PortalStyles {
     static Map<String, Style> load(Path file) {
         Map<String, Style> out = new TreeMap<>();
         if (file == null || !Files.exists(file)) return out;
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file.toFile());
+        YamlConfiguration yaml = YamlCheck.loadData(file, java.util.logging.Logger.getLogger("VystormPortals"));
         ConfigurationSection all = yaml.getConfigurationSection("styles");
         if (all != null) for (String id : all.getKeys(false)) {
             ConfigurationSection s = all.getConfigurationSection(id);

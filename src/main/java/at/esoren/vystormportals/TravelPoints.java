@@ -27,7 +27,7 @@ final class TravelPoints {
         this.files = files;
         this.file = file;
         if (!Files.isRegularFile(file)) return;
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file.toFile());
+        YamlConfiguration yaml = YamlCheck.loadData(file, java.util.logging.Logger.getLogger("VystormPortals"));
         ConfigurationSection h = yaml.getConfigurationSection("homes");
         if (h != null) for (String owner : h.getKeys(false)) {
             try {

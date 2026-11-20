@@ -119,7 +119,9 @@ final class PortalPanels implements PortalPanel.Actions, TrustPanel.Actions {
                     var s = plugin.styles().of(id); String choice = value.toString();
                     List<String> choices = setting.equals("particle") ? PortalStyles.PARTICLES : setting.equals("sound") ? PortalStyles.SOUNDS : PortalStyles.ARRIVALS;
                     if (!choices.contains(choice)) return denied(player);
-                    if (!PortalSwitches.designer(plugin.getConfig())) return Result.error(lang.plain(player, PortalSwitches.OFF));
+                    if (!PortalSwitches.on(plugin.getConfig(), PortalSwitches.DESIGNER)) return Result.error(lang.plain(player, PortalSwitches.OFF));
+                    if (!PortalSwitches.manual(plugin.getConfig())) return Result.error(lang.plain(player, PortalSwitches.NEEDS,
+                            "0", lang.plain(player, PortalSwitches.labelKey(PortalSwitches.MANUAL)), "1", PortalSwitches.MANUAL));
                     plugin.styles().set(id, new PortalStyles.Style(setting.equals("particle") ? choice : s.particle(),
                             setting.equals("sound") ? choice : s.sound(), setting.equals("arrival") ? choice : s.arrival()));
                 }

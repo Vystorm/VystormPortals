@@ -64,14 +64,16 @@ final class PortalPanel {
                         .onClick(a -> { a.closeAndThen(v -> actions.leave(v, id, "locate")); return Result.ok(); }));
         Ui.Tabs tabs = Ui.tabs("portal-tabs").tab("details", t.get("panel.details"), summary);
         if (!r.editable()) return tabs;
+        // 1.25.0: the settings of a portal are a list on Vystorm Screens (Core 0.66.0): name left, value right.
         summary.children(
-                Ui.toggle("public", t.get("menu.access-public")).value(p.publicAccess())
-                        .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "access", value))),
-                Ui.toggle("paused", t.get("menu.pause")).value(p.paused())
-                        .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "paused", value))),
-                Ui.number("warmup", t.get("menu.warmup", "ticks", p.warmupTicks(), "seconds", p.warmupTicks() / 20.0))
-                        .range(0, 200, 10).value(p.warmupTicks()).decimals(0)
-                        .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "warmup", value))),
+                Ui.section(t.get("panel.setting.title")).list().id("settings").children(
+                        Ui.toggle("public", t.get("panel.setting.public")).description(t.get("panel.setting.public-desc")).value(p.publicAccess())
+                                .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "access", value))),
+                        Ui.toggle("paused", t.get("panel.setting.paused")).description(t.get("panel.setting.paused-desc")).value(p.paused())
+                                .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "paused", value))),
+                        Ui.number("warmup", t.get("panel.setting.warmup")).tooltip(t.get("panel.setting.warmup-desc"))
+                                .range(0, 200, 10).value(p.warmupTicks()).decimals(0)
+                                .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "warmup", value)))),
                 Ui.button("delete").label(t.get("menu.delete")).icon(Ui.item(Material.LAVA_BUCKET)).danger()
                         .confirm(t.get("menu.delete"), t.get("panel.delete-confirm", "name", id))
                         .onClick(a -> refresh(a, actions.change(a.player(), id, "delete", ""))));
@@ -94,24 +96,27 @@ final class PortalPanel {
         if (r.style() != null) {
             PortalStyles.Style s = r.style();
             tabs.tab("style", t.get("menu.style"), Ui.col().gap(6).children(
-                    style(t, actions, id, "particle", s.particle(), PortalStyles.PARTICLES),
-                    style(t, actions, id, "sound", s.sound(), PortalStyles.SOUNDS),
-                    style(t, actions, id, "arrival", s.arrival(), PortalStyles.ARRIVALS),
+                    Ui.section(t.get("panel.setting.style")).list().id("style-settings").children(
+                            style(t, actions, id, "particle", s.particle(), PortalStyles.PARTICLES),
+                            style(t, actions, id, "sound", s.sound(), PortalStyles.SOUNDS),
+                            style(t, actions, id, "arrival", s.arrival(), PortalStyles.ARRIVALS)),
                     Ui.button("preview").label(t.get("style.preview")).icon(Ui.item(Material.SPYGLASS))
                             .onClick(a -> { a.closeAndThen(v -> actions.leave(v, id, "preview")); return Result.ok(); })));
         }
         PortalHours.Schedule s = r.hours() == null ? PortalHours.Schedule.DEFAULT : r.hours();
-        Ui.Box hours = Ui.col().gap(6).child(Ui.toggle("always", t.get("hours.always")).value(r.hours() == null)
+        Ui.Section hours = Ui.section(t.get("hours.menu")).list().id("hours-settings")
+                .child(Ui.toggle("always", t.get("hours.always")).description(t.get("panel.setting.always-desc")).value(r.hours() == null)
                 .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "always", value))));
         if (r.hours() != null) {
             for (int day = 0; day < 7; day++) {
                 int d = day;
-                hours.child(Ui.toggle("day-" + day, t.get("hours.day." + (day + 1))).value((s.days() & (1 << day)) != 0)
+                hours.child(Ui.toggle("day-" + day, t.get("panel.setting.day-" + (day + 1))).description(t.get("panel.setting.day-desc"))
+                        .value((s.days() & (1 << day)) != 0)
                         .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "day-" + d, value))));
             }
             hours.children(time(t, actions, id, "open", s.open()), time(t, actions, id, "close", s.close()));
         }
-        return tabs.tab("hours", t.get("hours.menu"), hours);
+        return tabs.tab("hours", t.get("hours.menu"), Ui.col().gap(6).child(hours));
     }
 
     private static Ui.NumberField time(Text t, Actions actions, String id, String key, int minute) {
@@ -120,7 +125,7 @@ final class PortalPanel {
                 .onChange((a, value) -> refresh(a, actions.change(a.player(), id, "time-" + key, value)));
     }
     private static Ui.Select style(Text t, Actions actions, String id, String key, String value, List<String> choices) {
-        Ui.Select select = Ui.select(key, t.get("style." + key, "value", t.get("style.choice." + value))).value(value);
+        Ui.Select select = Ui.select(key, t.get("panel.setting." + key)).tooltip(t.get("panel.setting." + key + "-desc")).value(value);
         for (String choice : choices) select.option(choice, t.get("style.choice." + choice));
         return select.onChange((a, choice) -> refresh(a, actions.change(a.player(), id, key, choice)));
     }

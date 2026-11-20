@@ -1,3 +1,13 @@
+## 1.25.0 — 2026-11-20
+
+- Fixed: a `config.yml` with a YAML mistake no longer resets the settings when it is reloaded (for example from `/vadmin config`). The file is left as it is, the console names the line and column of the mistake, and the last working settings stay active (at start: the default settings).
+- Fixed: `styles.yml`, `hours.yml`, `travel.yml` and `energy.yml` with a YAML mistake are copied to `<name>.broken-<date-time>` before the plugin writes the file again, so portal styles, opening hours, homes, warps and energy are never lost to a typo; the console names the line and column.
+- `/vadmin features` names every switch of the plugin in seven languages ("Portal energy", "End gateway views") instead of the key path ("Travel gates › Energy").
+- A command whose own switch is on but which needs another switch now names that switch: `/vportal menu`, `/vportal trip` and the Style page answer "This needs “Own portals” (manual-portals.enabled), which is switched off on this server.", and `/home`, `/warp`, `/homes`, `/warps` and `/vportal energy` name `travel-gates.enabled`.
+- The portal menu shows a portal's settings as a list on Vystorm Screens: public access, pause, warmup, the three style choices and the opening hours each sit in one row with the full name on the left, the value on the right and a one-line description below. The trust page of the player menu does the same. Players with the client mod or the web page see the menu as before.
+- README: the supported servers are written as tested: Paper and Purpur 26.2, Paper 1.20.6 and Spigot 26.2.
+- Requires Vystorm Core 0.66.0 or newer. Update Core before you update this plugin.
+
 ## 1.24.0 — 2026-11-18
 
 - Requires Vystorm Core 0.65.0. Update Core before you update this plugin.

@@ -60,7 +60,7 @@ final class PortalEnergy {
         this.file = file;
         this.rules = rules;
         if (Files.isRegularFile(file)) {
-            ConfigurationSection all = YamlConfiguration.loadConfiguration(file.toFile()).getConfigurationSection("energy");
+            ConfigurationSection all = YamlCheck.loadData(file, java.util.logging.Logger.getLogger("VystormPortals")).getConfigurationSection("energy");
             if (all != null) for (String key : all.getKeys(false)) {
                 try {
                     saved.put(UUID.fromString(key), new Saved(all.getDouble(key + ".value"), all.getLong(key + ".at")));

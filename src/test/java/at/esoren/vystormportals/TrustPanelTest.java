@@ -18,6 +18,8 @@ class TrustPanelTest {
             assertTrue(PanelTesting.find(doc, "trusted").get("value").getAsBoolean());
             assertEquals("market", PanelTesting.find(doc, "trust-portals").get("selected").getAsString());
             assertTrue(doc.toString().contains("Alex"));
+            assertEquals("list", PanelTesting.find(doc, "trust-settings").get("layout").getAsString(), code);
+            assertTrue(PanelTesting.plain(PanelTesting.find(doc, "trusted").get("description")).contains("Alex"), code);
             assertFalse(doc.toString().contains("{player}") || doc.toString().contains("panel.trust-help"));
         }
     }

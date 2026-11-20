@@ -30,7 +30,7 @@ These are explicit temporary direct legs between accessible portals; they do not
 
 ## Installation and existing features
 
-Install Vystorm Core **0.65.0+**, then `VystormPortals-<version>.jar` (for this release `VystormPortals-1.24.0.jar`) in `plugins/` and restart. Java 21 bytecode is used; run the Java version required by your Minecraft server. The build compiles against Paper 26.2 and, in its compatibility checks, against Paper 1.20.6; Spigot and CraftBukkit 26.3 were last started with 1.14.0 and Core 0.51.0 (`release/spigot-compatibility-2026-11-07/VALIDATION.md`); 26.2 is named but not recorded there. Folia is unsupported.
+Install Vystorm Core **0.66.0+**, then `VystormPortals-<version>.jar` (for this release `VystormPortals-1.25.0.jar`) in `plugins/` and restart. Java 21 bytecode is used; run the Java version required by your Minecraft server. Tested on Paper and Purpur 26.2, Paper 1.20.6 and Spigot 26.2. Folia is unsupported.
 
 ## Feature switches (1.24.0)
 

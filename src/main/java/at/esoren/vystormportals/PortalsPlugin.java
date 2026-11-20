@@ -55,14 +55,16 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
     /** The Core hub for the classes of this plugin (they get the plugin in their constructor). */
     Vystorm.vystorm_core.API core() { return core; }
     @Override public void onEnable() {
-        if (!CoreApi.atLeast("0.65.0")) {
-            getLogger().severe("Vystorm Core 0.65.0 or newer required");
+        // 0.66.0: the portal menu draws its settings as lists (Ui.Section.list()).
+        if (!CoreApi.atLeast("0.66.0")) {
+            getLogger().severe("Vystorm Core 0.66.0 or newer required");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         core = CoreApi.api().orElseThrow();
         core.admin().updates().spigot(this, 139879);
         saveDefaultConfig();
+        YamlCheck.readConfig(this, false);   // a broken config.yml: reported with line and column, jar defaults, never saved over
         try {
             lang = core.lang().register(this);
         } catch (RuntimeException unavailable) {
@@ -73,12 +75,7 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
             // off); Core merges new keys into an existing config.yml. Only the short commands and the tutorial need a restart.
             var config = core.settings().config();
             config.registerAll(this, this::reloadSettings);
-            for (String path : PortalSwitches.all()) {
-                String description = lang == null ? null : lang.ref(PortalSwitches.descriptionKey(path));
-                if (PortalSwitches.DECLARED.contains(path)) config.feature(this, path, null, description);
-                else if (description != null) config.label(this, path, null, description);
-            }
-            for (String key : PortalSwitches.RESTART) config.activation(this, key, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
+            declareSwitches(config, this, lang);
         } catch (RuntimeException configMenuUnavailable) {
             getLogger().fine("Config menu unavailable: " + configMenuUnavailable);
         }
@@ -194,14 +191,26 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         corrections.clear();
         cooldown.clear();
     }
+    /** What Core receives for {@code /vadmin features}: every switch with its name and description (FeatureLabelsTest runs this). */
+    static void declareSwitches(Vystorm.vystorm_core._uiMethods.settings.ConfigEditorInterface config, org.bukkit.plugin.Plugin plugin, Vystorm.vystorm_core.lang.Lang lang) {
+        for (String path : PortalSwitches.all()) {
+            String description = lang == null ? null : lang.ref(PortalSwitches.descriptionKey(path));
+            String label = lang == null ? null : lang.ref(PortalSwitches.labelKey(path));
+            if (PortalSwitches.DECLARED.contains(path)) config.feature(plugin, path, label, description);
+            else if (description != null) config.label(plugin, path, label, description);
+        }
+        for (String key : PortalSwitches.RESTART) config.activation(plugin, key, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
+    }
+
     /**
      * The reload hook (1.24.0): reads config.yml again and applies every switch at once. Views and gates read their
      * switches every tick and close when one is off, so open views are safe; instant travel restores or sets the
      * gamerules; entity travel starts fresh. Only travel-gates.short-commands and tutorial.enabled need a restart.
      */
     void reloadSettings() {
+        // a config.yml with a YAML error is left as it is and the last good settings stay (reported in the console)
         List<Boolean> listed = listing();
-        reloadConfig();
+        if (YamlCheck.readConfig(this, true) != null) return;
         // tab completion asks the switches live; a changed switch only needs the players' command lists sent again
         if (core != null && !listed.equals(listing())) core.command().refresh();
         trust = Trust.read(getConfig());
@@ -735,6 +744,10 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
                     say(sender, "usage");
                     return true;
                 }
+                if (menu != null && getConfig().getBoolean("menu.enabled", true) && !PortalSwitches.manual(getConfig())) {
+                    needs(sender, PortalSwitches.MANUAL);
+                    return true;
+                }
                 if (menu == null || !PortalSwitches.menu(getConfig())) {
                     say(sender, PortalSwitches.OFF);
                     return true;
@@ -999,6 +1012,10 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
         }
         core.compat().platform().sendMessage(sender, net.kyori.adventure.text.Component.text("[VystormPortals] ", net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY).append(lang.component(sender, key, pairs)));
     }
+    /** "This needs <name> (<path>), which is switched off on this server." for a feature that depends on {@code path} (1.24.1). */
+    void needs(CommandSender sender, String path) {
+        say(sender, PortalSwitches.NEEDS, plain(sender, PortalSwitches.labelKey(path)), path);
+    }
     /** A language text as plain string (key itself without the language system). */
     String plain(CommandSender sender, String key) {
         return lang == null ? key : lang.plain(sender, key);
@@ -1092,7 +1109,8 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
                 .sub("nearby", s -> hide(p, "nearby", s).playerOnly().executes(ctx -> p.run(ctx.player(), "nearby")))
                 .sub("trip", s -> hide(p, "trip", s).playerOnly().permission("vystormportals.use").arg(Arg.greedy("action").optional()
                         .suggests((ctx, prefix) -> p.trips == null ? List.of() : p.trips.suggest(ctx.player(), Arrays.copyOfRange(ctx.rawArgs(), 1, ctx.rawArgs().length)))).executes(ctx -> {
-                    if (!PortalSwitches.on(p.getConfig(), PortalSwitches.TRIPS) || !PortalSwitches.manual(p.getConfig())) p.say(ctx.player(), PortalSwitches.OFF);
+                    if (!PortalSwitches.on(p.getConfig(), PortalSwitches.TRIPS)) p.say(ctx.player(), PortalSwitches.OFF);
+                    else if (!PortalSwitches.manual(p.getConfig())) p.needs(ctx.player(), PortalSwitches.MANUAL);
                     else if (p.trips == null) ctx.reply("failed");
                     else p.trips.command(ctx.player(), ctx.get("action"));
                 }))
@@ -1176,9 +1194,12 @@ public final class PortalsPlugin extends JavaPlugin implements Listener {
             });
         });
     }
-    /** Runs a travel gate action, or says that travel gates are off. */
+    /**
+     * Runs a travel gate action; each action checks its own switch first and then names {@code travel-gates.enabled}
+     * when only that one is off (1.24.1).
+     */
     void gates(java.util.function.Consumer<TravelGates> action, Player player) {
-        if (gates == null || !gates.enabled()) say(player, PortalSwitches.OFF);
+        if (gates == null) say(player, PortalSwitches.OFF);
         else action.accept(gates);
     }
     private static Arg<String> homeName(PortalsPlugin p) {

@@ -162,7 +162,8 @@ final class TravelGates {
 
     void energy(Player player) {
         PortalEnergy.Rules rules = energy.rules();
-        if (!rules.enabled() || !settings.enabled()) { plugin.say(player, PortalSwitches.OFF); return; }
+        if (!rules.enabled()) { plugin.say(player, PortalSwitches.OFF); return; }
+        if (!settings.enabled()) { plugin.needs(player, PortalSwitches.TRAVEL_GATES); return; }
         double value = energy.current(player.getUniqueId(), clock.getAsLong());
         long full = rules.secondsUntil(value, rules.max());
         plugin.say(player, "gate.energy", (long) Math.floor(value), (long) rules.max(), time(full));
@@ -174,7 +175,8 @@ final class TravelGates {
     private boolean check(Player player, String permission) {
         // travel-gates.homes.enabled / travel-gates.warps.enabled (1.24.0): homes and warps can be switched apart
         String part = permission.startsWith("vystormportals.home") ? PortalSwitches.HOMES : PortalSwitches.WARPS;
-        if (!settings.enabled() || !PortalSwitches.on(plugin.getConfig(), part)) { plugin.say(player, PortalSwitches.OFF); return false; }
+        if (!PortalSwitches.on(plugin.getConfig(), part)) { plugin.say(player, PortalSwitches.OFF); return false; }
+        if (!settings.enabled()) { plugin.needs(player, PortalSwitches.TRAVEL_GATES); return false; }
         if (!player.hasPermission(permission)) { plugin.say(player, "denied"); return false; }
         return true;
     }

@@ -107,7 +107,7 @@ final class PortalHours {
     static Map<String, Schedule> load(Path file) {
         Map<String, Schedule> out = new TreeMap<>();
         if (file == null || !Files.exists(file)) return out;
-        ConfigurationSection all = YamlConfiguration.loadConfiguration(file.toFile()).getConfigurationSection("hours");
+        ConfigurationSection all = YamlCheck.loadData(file, java.util.logging.Logger.getLogger("VystormPortals")).getConfigurationSection("hours");
         if (all != null) for (String id : all.getKeys(false)) {
             ConfigurationSection s = all.getConfigurationSection(id);
             if (s == null || !id.matches("[a-z0-9_-]{1,40}")) continue;

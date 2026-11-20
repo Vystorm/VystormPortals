@@ -88,6 +88,68 @@ class PortalSwitchesTest {
         }
     }
 
+    /**
+     * 1.25.0: every boolean that Core's {@code /vadmin features} lists for config.yml (keys named {@code enabled},
+     * top-level booleans, declared switches) has a readable name and a description in all seven languages, so the
+     * screen never shows a raw key path such as "Travel gates › Energy".
+     */
+    @Test void givenEveryFeatureCoreListsFromConfigYml_whenDescribed_thenAllSevenLanguagesHaveNameAndDescription() {
+        YamlConfiguration config = shipped();
+        java.util.Set<String> housekeeping = java.util.Set.of("metrics", "debug", "verbose", "sound", "console-log", "placeholderapi", "update-check");
+        List<String> listed = new java.util.ArrayList<>();
+        for (String path : config.getKeys(true)) {
+            if (!config.isBoolean(path)) continue;
+            boolean feature = path.equals("enabled") || path.endsWith(".enabled") || (path.indexOf('.') < 0 && !housekeeping.contains(path));
+            if (feature || PortalSwitches.DECLARED.contains(path)) listed.add(path);
+        }
+        assertTrue(listed.size() >= 30, "found " + listed);
+        assertTrue(PortalSwitches.all().containsAll(listed), "registered with name and description: " + listed);
+        for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn")) {
+            YamlConfiguration lang = YamlConfiguration.loadConfiguration(new File("src/main/resources/lang/" + code + ".yml"));
+            for (String key : listed) {
+                assertFalse(lang.getString(PortalSwitches.labelKey(key), "").isBlank(), code + " name " + key);
+                assertFalse(lang.getString(PortalSwitches.descriptionKey(key), "").isBlank(), code + " description " + key);
+            }
+            String needs = lang.getString(PortalSwitches.NEEDS, "");
+            assertTrue(needs.contains("{0}") && needs.contains("{1}"), code + " needs message: " + needs);
+        }
+    }
+
+    @Test void givenManualPortalsOff_whenMenuOrTripIsAsked_thenTheAnswerNamesTheManualPortalsSwitch() throws Exception {
+        PortalsPlugin plugin = plugin(with(PortalSwitches.MANUAL, false), Map.of());
+        set(plugin, "menu", mock(PortalMenu.class));
+        Player player = player();
+        plugin.run(player, "menu");
+        verify(plugin).say(player, PortalSwitches.NEEDS, PortalSwitches.labelKey(PortalSwitches.MANUAL), PortalSwitches.MANUAL);
+        verify(plugin, never()).say(player, PortalSwitches.OFF);
+        PortalsPlugin menuOff = plugin(with(PortalSwitches.MANUAL, false, "menu.enabled", false), Map.of());
+        set(menuOff, "menu", mock(PortalMenu.class));
+        menuOff.run(player, "menu");
+        verify(menuOff).say(player, PortalSwitches.OFF);
+    }
+
+    @Test void givenTravelGatesOff_whenHomeWarpOrEnergyIsAsked_thenTheAnswerNamesTheTravelGatesSwitch() throws Exception {
+        YamlConfiguration config = with(PortalSwitches.TRAVEL_GATES, false, "travel-gates.energy.enabled", true);
+        PortalsPlugin plugin = plugin(config, Map.of());
+        TravelGates gates = mock(TravelGates.class, CALLS_REAL_METHODS);
+        var energy = mock(PortalEnergy.class);
+        when(energy.rules()).thenReturn(PortalEnergy.Rules.read(config));
+        for (var field : List.of("plugin", "settings", "energy")) {
+            var f = TravelGates.class.getDeclaredField(field);
+            f.setAccessible(true);
+            f.set(gates, switch (field) { case "plugin" -> plugin; case "settings" -> TravelGates.Settings.read(config); default -> energy; });
+        }
+        set(plugin, "gates", gates);
+        Player player = player();
+        plugin.gates(g -> g.homes(player), player);
+        plugin.gates(g -> g.warps(player), player);
+        plugin.gates(g -> g.energy(player), player);
+        verify(plugin, times(3)).say(player, PortalSwitches.NEEDS, PortalSwitches.labelKey(PortalSwitches.TRAVEL_GATES), PortalSwitches.TRAVEL_GATES);
+        config.set(PortalSwitches.HOMES, false);
+        plugin.gates(g -> g.homes(player), player);
+        verify(plugin).say(player, PortalSwitches.OFF);
+    }
+
     @Test void givenOldConfigWithoutNewKeys_whenRead_thenEverythingIsOn() {
         YamlConfiguration old = shipped();
         for (String key : PortalSwitches.NEW) old.set(key, null);

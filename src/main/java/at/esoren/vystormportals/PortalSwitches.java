@@ -24,6 +24,9 @@ final class PortalSwitches {
     static final String TUTORIAL = "tutorial.enabled";
     /** The one language key every switched-off command answers with. */
     static final String OFF = "feature-off";
+    /** 1.24.1: the answer for a feature whose own switch is on but which needs another switch; {0} name, {1} path. */
+    static final String NEEDS = "feature-needs";
+    static final String TRAVEL_GATES = "travel-gates.enabled";
 
     static final List<String> NEW = List.of(MANUAL, TRIPS, DESIGNER, MAINTENANCE, HOMES, WARPS, IMPORT, WORLD_LINKS, TUTORIAL);
     /** Switches named enabled before 1.24.0. */
@@ -54,6 +57,14 @@ final class PortalSwitches {
         all.addAll(OLDER);
         for (String key : DECLARED) if (!all.contains(key)) all.add(key);
         return all;
+    }
+
+    /** {@code trust.player-menu} -> {@code feature-names.trust-player-menu}: the readable name of a switch (1.24.1). */
+    static String labelKey(String path) { return "feature-names." + subject(path); }
+
+    private static String subject(String path) {
+        String subject = path.endsWith(".enabled") ? path.substring(0, path.length() - ".enabled".length()) : path;
+        return subject.replace('.', '-');
     }
 
     /** {@code trust.player-menu} -> {@code features.trust-player-menu}: the language key of a switch description. */
