@@ -105,6 +105,25 @@ class TravelGateTest {
     }
 
     @Test
+    void playersWithAFullBarAgainLeaveEnergyFileWithoutChangingTheirEnergy(@org.junit.jupiter.api.io.TempDir Path dir) throws Exception {
+        Path file = dir.resolve("energy.yml");
+        PortalEnergy.Rules rules = new PortalEnergy.Rules(true, 100, 10, 5, 2, 40);
+        PortalEnergy energy = new PortalEnergy(file, rules, Vystorm.vystorm_core._coreMethods.dataStorage.AtomicFilesInterface.DEFAULT);
+        UUID early = UUID.randomUUID(), late = UUID.randomUUID();
+        assertTrue(energy.take(early, 50, 0));
+        assertEquals(1, energy.stored());
+        long later = 6 * 60_000; // 10 per minute: 50 is back after 5 minutes
+        assertTrue(energy.take(late, 20, later));
+        assertEquals(1, energy.stored(), "the player whose bar filled up again is no longer kept");
+        assertEquals(100, energy.current(early, later), 1e-9);
+        PortalEnergy reread = new PortalEnergy(file, rules, Vystorm.vystorm_core._coreMethods.dataStorage.AtomicFilesInterface.DEFAULT);
+        assertEquals(1, reread.stored());
+        assertFalse(YamlConfiguration.loadConfiguration(file.toFile()).contains("energy." + early));
+        assertEquals(100, reread.current(early, later), 1e-9);
+        assertEquals(80, reread.current(late, later), 1e-9);
+    }
+
+    @Test
     void homesAndWarpsAreSaved(@org.junit.jupiter.api.io.TempDir Path dir) throws Exception {
         Path file = dir.resolve("travel.yml");
         TravelPoints points = new TravelPoints(file, Vystorm.vystorm_core._coreMethods.dataStorage.AtomicFilesInterface.DEFAULT);

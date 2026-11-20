@@ -83,17 +83,26 @@ final class PortalEnergy {
         double value = current(player, now);
         if (value + 1e-9 < amount) return false;
         saved.put(player, new Saved(value - amount, now));
-        save();
+        save(now);
         return true;
     }
 
     /** Gives back {@code amount} (a gate nobody used). */
     void refund(UUID player, double amount, long now) throws IOException {
         saved.put(player, new Saved(Math.min(rules.max(), current(player, now) + amount), now));
-        save();
+        save(now);
     }
 
-    private void save() throws IOException {
+    /** Number of players whose energy is kept in {@code energy.yml} (everyone else is full). */
+    int stored() { return saved.size(); }
+
+    /**
+     * Writes {@code energy.yml}. Players whose bar has filled up again are left out: a player without an entry starts
+     * full, so they see the same value, and the file holds only players who used a gate recently instead of everyone
+     * who ever did.
+     */
+    private void save(long now) throws IOException {
+        saved.entrySet().removeIf(e -> rules.recharge(e.getValue().value(), now - e.getValue().at()) >= rules.max());
         YamlConfiguration yaml = new YamlConfiguration();
         saved.forEach((id, s) -> { yaml.set("energy." + id + ".value", s.value()); yaml.set("energy." + id + ".at", s.at()); });
         Files.createDirectories(file.getParent());

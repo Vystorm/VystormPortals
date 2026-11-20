@@ -1,3 +1,9 @@
+## 1.25.1 — 2026-11-20
+
+- With travel gate energy on (`travel-gates.energy.enabled`), `energy.yml` now keeps only players whose energy bar is not full. A player whose bar has filled up again is left out at the next save and starts full, as before, so nobody sees a different value.
+- The file no longer grows with every player who ever opened a gate, so each `/home` or `/warp` gate writes a small file even on servers with thousands of past players.
+- The file format stays the same: 1.25.0 reads the new file, and a player missing from it starts full there too.
+
 ## 1.25.0 — 2026-11-20
 
 - Fixed: a `config.yml` with a YAML mistake no longer resets the settings when it is reloaded (for example from `/vadmin config`). The file is left as it is, the console names the line and column of the mistake, and the last working settings stay active (at start: the default settings).
